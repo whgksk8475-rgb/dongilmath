@@ -14,7 +14,7 @@
 
   <div class="max-w-4xl mx-auto space-y-8">
     
-    <!-- 헤더 및 모드 전환 -->
+    <!-- 헤더 -->
     <header class="bg-white rounded-2xl shadow-sm p-6 flex flex-wrap justify-between items-center gap-4">
       <div>
         <h1 class="text-2xl font-bold text-slate-900">수학 6-1 총기말평가 2회 자동 채점</h1>
@@ -57,16 +57,13 @@
         </div>
       </section>
 
-      <!-- 답안 입력 영역 -->
       <section class="bg-white rounded-2xl shadow-sm p-6">
         <div class="flex justify-between items-center mb-6">
           <h2 class="text-lg font-bold text-slate-800">문항별 정답 입력 (총 25문항, 문항당 4점)</h2>
-          <span class="text-xs bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full font-medium">단위는 자동 기입되므로 값만 입력/선택</span>
+          <span class="text-xs bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full font-medium">9, 13, 21번은 선생님이 직접 확인 후 채점</span>
         </div>
 
-        <div id="questionsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          <!-- JS 렌더링 -->
-        </div>
+        <div id="questionsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
 
         <div class="mt-8 text-center">
           <button onclick="submitAnswers()" class="w-full md:w-1/2 py-3 bg-indigo-600 text-white font-bold rounded-xl shadow-md hover:bg-indigo-700 transition">
@@ -75,12 +72,12 @@
         </div>
       </section>
 
-      <!-- 학생 결과 확인 카드 -->
+      <!-- 학생 결과 카드 -->
       <section id="resultCard" class="hidden bg-white rounded-2xl shadow-lg border-2 border-indigo-500 p-6 space-y-4">
         <div class="flex items-center justify-between border-b pb-4">
           <div>
             <h3 class="text-xl font-bold text-slate-900" id="resultGreeting">채점 결과</h3>
-            <p class="text-sm text-slate-500">틀린 문제를 시험지에서 다시 확인해 보세요.</p>
+            <p class="text-sm text-slate-500">서술형/그리기 3문항(9, 13, 21번)은 선생님 확인 후 점수가 최종 확정됩니다.</p>
           </div>
           <div class="text-right">
             <span class="text-3xl font-extrabold text-indigo-600" id="resultScore">0</span>
@@ -126,7 +123,7 @@
         <div class="flex justify-between items-center mb-4">
           <div>
             <h3 class="text-base font-bold text-slate-800">학생별 제출 현황</h3>
-            <p class="text-xs text-slate-400 mt-0.5">학생 이름을 클릭하면 문항별 상세 답안 및 오답 원인을 볼 수 있습니다.</p>
+            <p class="text-xs text-slate-400 mt-0.5">이름을 클릭하여 주관식/그리기 채점(O/X) 및 오답 원인을 분석하세요.</p>
           </div>
           <div class="space-x-2">
             <button onclick="downloadCSV()" class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-700">CSV 내보내기</button>
@@ -139,10 +136,11 @@
             <thead class="bg-slate-50 text-slate-500 font-semibold border-b">
               <tr>
                 <th class="p-3">학번</th>
-                <th class="p-3">이름 (클릭 상세)</th>
+                <th class="p-3">이름 (클릭 채점)</th>
                 <th class="p-3">성별</th>
                 <th class="p-3">점수</th>
-                <th class="p-3">틀린 문항 번호</th>
+                <th class="p-3">교사 미채점 문항</th>
+                <th class="p-3">틀린 문항</th>
               </tr>
             </thead>
             <tbody id="studentTableBody" class="divide-y divide-slate-100"></tbody>
@@ -153,20 +151,23 @@
 
   </div>
 
-  <!-- 교사용 학생 상세 분석 모달 -->
+  <!-- 교사용 학생 상세 분석 및 수동 채점 모달 -->
   <div id="detailModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden">
       <div class="p-5 border-b flex justify-between items-center bg-slate-50">
         <div>
-          <h3 class="text-lg font-bold text-slate-900" id="modalStudentTitle">학생 오답 심층 분석</h3>
-          <p class="text-xs text-slate-500 mt-0.5" id="modalStudentSub">제출 답안 및 오답 유형 분석</p>
+          <h3 class="text-lg font-bold text-slate-900" id="modalStudentTitle">학생 개별 채점 및 분석</h3>
+          <p class="text-xs text-slate-500 mt-0.5" id="modalStudentSub">주관식 채점 체크 시 총점과 학급 통계에 즉시 반영됩니다.</p>
         </div>
         <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-700 text-2xl font-bold p-1">&times;</button>
       </div>
-      <div class="p-5 overflow-y-auto space-y-3" id="modalContent">
+
+      <div class="p-5 overflow-y-auto space-y-5" id="modalContent">
         <!-- JS 렌더링 -->
       </div>
-      <div class="p-4 border-t bg-slate-50 text-right">
+
+      <div class="p-4 border-t bg-slate-50 flex justify-between items-center">
+        <span class="text-xs text-slate-400">체크박스를 변경하면 자동 저장됩니다.</span>
         <button onclick="closeDetailModal()" class="px-5 py-2 bg-slate-800 text-white rounded-xl text-sm font-semibold hover:bg-slate-900">닫기</button>
       </div>
     </div>
@@ -175,7 +176,7 @@
   <script>
     let isTeacherAuthenticated = false;
 
-    // 문항 구성 및 정답 데이터
+    // 문항 설정 (manual: true 문항은 교사 수동 채점 문항)[cite: 1]
     const quizConfig = [
       { no: 1, unit: "번", answer: ["4"], type: "select", options: ["1", "2", "3", "4", "5"] },
       { no: 2, unit: "cm", answer: ["10"] },
@@ -187,11 +188,11 @@
       { no: 6, unit: "m²", type: "mixed_fraction", answerNat: "1", answerFrac: "5/8" },
       { no: 7, unit: "g", answer: ["3.75"] },
       { no: 8, unit: "m", answer: ["0.29"] },
-      { no: 9, unit: "(자가채점)", answer: ["맞음"], type: "select", options: ["맞음", "틀림"] },
+      { no: 9, unit: "서술/작도", manual: true, title: "각기둥의 전개도 완성" }, // 교사 채점[cite: 1]
       { no: 10, unit: "기호", answer: ["<"], type: "select", options: [">", "=", "<"] },
       { no: 11, unit: "%", answer: ["35"] },
       { no: 12, unit: "명", answer: ["45"] },
-      { no: 13, unit: "(자가채점)", answer: ["맞음"], type: "select", options: ["맞음", "틀림"] },
+      { no: 13, unit: "서술/작도", manual: true, title: "그림그래프로 나타내기" }, // 교사 채점[cite: 1]
       { no: 14, unit: "대", answer: ["180"] },
       { no: 15, unit: "개", answer: ["14"] },
       { no: 16, unit: "cm", answer: ["55"] },
@@ -199,7 +200,7 @@
       { no: 18, unit: "", answer: ["태준 아버지"], type: "select", options: ["태준", "태준 아버지", "어머니", "동생"] },
       { no: 19, unit: "cm", answer: ["0.45"] },
       { no: 20, unit: "%", answer: ["24"] },
-      { no: 21, unit: "(자가채점)", answer: ["맞음"], type: "select", options: ["맞음", "틀림"] },
+      { no: 21, unit: "서술/설명", manual: true, title: "교통사고 원인 비율 변화 설명" }, // 교사 채점[cite: 1]
       { no: 22, unit: "개", answer: ["1536"] },
       { no: 23, unit: "cm³", answer: ["96"] },
       { no: 24, unit: "km", answer: ["0.13"] },
@@ -210,7 +211,11 @@
       const container = document.getElementById("questionsContainer");
       container.innerHTML = quizConfig.map(q => {
         let inputField = '';
-        if (q.type === 'select') {
+
+        if (q.manual) {
+          // 교사 직접 채점 문항 안내 문구
+          inputField = `<span class="text-xs bg-slate-200 text-slate-600 px-2 py-1.5 rounded-lg font-semibold">선생님 확인 문항</span>`;
+        } else if (q.type === 'select') {
           inputField = `
             <select id="ans_${q.no}" class="border rounded-lg p-2 text-center text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
               <option value="">선택</option>
@@ -246,7 +251,7 @@
       return val.toString().replace(/\s+/g, "");
     }
 
-    // 학생 제출 및 답안 저장
+    // 학생 제출
     function submitAnswers() {
       const classNum = document.getElementById("classNum").value.trim();
       const studentNum = document.getElementById("studentNum").value.trim();
@@ -261,8 +266,14 @@
       let score = 0;
       let wrongQuestions = [];
       let answersRecord = {};
+      let manualGrades = { 9: null, 13: null, 21: null }; // null: 미채점, true: 정답, false: 오답
 
       quizConfig.forEach(q => {
+        if (q.manual) {
+          answersRecord[q.no] = "(시험지 직접 작성)";
+          return;
+        }
+
         let isCorrect = false;
         let recordedVal = "";
 
@@ -298,6 +309,7 @@
         score,
         wrongList: wrongQuestions,
         answers: answersRecord,
+        manualGrades,
         date: new Date().toLocaleString()
       };
 
@@ -315,18 +327,18 @@
       const wrongContainer = document.getElementById("wrongItemsContainer");
 
       card.classList.remove("hidden");
-      greeting.textContent = `${name} 학생 채점 완료`;
+      greeting.textContent = `${name} 학생 가채점 결과`;
       scoreEl.textContent = score;
 
       if (wrongQuestions.length === 0) {
         wrongContainer.innerHTML = `
           <div class="p-4 bg-emerald-50 text-emerald-800 rounded-xl font-semibold text-center">
-            🎉 모든 문제를 맞혔습니다! 만점입니다!
+            객관식/단답형 문제를 모두 맞혔습니다! (교사 채점 후 점수가 추가될 수 있습니다.)
           </div>`;
       } else {
         wrongContainer.innerHTML = `
           <div class="p-4 bg-rose-50 border border-rose-200 rounded-xl space-y-2">
-            <p class="text-rose-700 font-medium">다음 문항을 틀렸습니다. 시험지에서 확인 후 다시 풀어보세요.</p>
+            <p class="text-rose-700 font-medium">다음 단답형 문항을 틀렸습니다. 다시 확인해 보세요.</p>
             <div class="flex flex-wrap gap-2 pt-1">
               ${wrongQuestions.map(no => `<span class="px-3 py-1 bg-white border border-rose-300 text-rose-600 font-bold rounded-lg">${no}번</span>`).join('')}
             </div>
@@ -365,7 +377,6 @@
       }
     }
 
-    // 교사 대시보드 로드
     function loadTeacherAnalytics() {
       const submissions = JSON.parse(localStorage.getItem("quiz_submissions") || "[]");
       const totalCount = submissions.length;
@@ -375,7 +386,7 @@
         document.getElementById("statClassAvg").textContent = "0점";
         document.getElementById("statMaleAvg").textContent = "0점";
         document.getElementById("statFemaleAvg").textContent = "0점";
-        document.getElementById("studentTableBody").innerHTML = `<tr><td colspan="5" class="text-center p-6 text-slate-400">제출된 데이터가 없습니다.</td></tr>`;
+        document.getElementById("studentTableBody").innerHTML = `<tr><td colspan="6" class="text-center p-6 text-slate-400">제출된 데이터가 없습니다.</td></tr>`;
         return;
       }
 
@@ -392,11 +403,16 @@
       document.getElementById("statMaleAvg").textContent = `${maleAvg}점`;
       document.getElementById("statFemaleAvg").textContent = `${femaleAvg}점`;
 
-      // 오답률
+      // 오답률 집계 (수동 문항 포함)
       const wrongCounts = {};
       quizConfig.forEach(q => wrongCounts[q.no] = 0);
       submissions.forEach(s => {
         s.wrongList.forEach(qNo => wrongCounts[qNo]++);
+        if (s.manualGrades) {
+          [9, 13, 21].forEach(mNo => {
+            if (s.manualGrades[mNo] === false) wrongCounts[mNo]++;
+          });
+        }
       });
 
       const qStatsContainer = document.getElementById("questionStatsContainer");
@@ -414,114 +430,156 @@
         `;
       }).join('');
 
-      // 학생 표 (이름 클릭 시 모달 오픈)
+      // 학생 표
       const tbody = document.getElementById("studentTableBody");
       submissions.sort((a, b) => Number(a.studentNum) - Number(b.studentNum));
 
-      tbody.innerHTML = submissions.map(s => `
-        <tr class="hover:bg-slate-50 transition">
-          <td class="p-3 font-semibold text-slate-900">${s.grade}-${s.classNum}-${s.studentNum}</td>
-          <td class="p-3">
-            <button onclick="openDetailModal(${s.id})" class="text-indigo-600 hover:text-indigo-900 font-bold underline underline-offset-4 flex items-center gap-1">
-              ${s.name}
-              <span class="text-[10px] bg-indigo-50 text-indigo-600 border border-indigo-200 px-1 rounded">상세</span>
-            </button>
-          </td>
-          <td class="p-3 text-slate-500">${s.gender}</td>
-          <td class="p-3 font-bold ${s.score >= 80 ? 'text-indigo-600' : 'text-slate-700'}">${s.score}점</td>
-          <td class="p-3 text-xs text-rose-600">${s.wrongList.length > 0 ? s.wrongList.join(', ') + '번' : '<span class="text-emerald-600 font-semibold">만점</span>'}</td>
-        </tr>
-      `).join('');
+      tbody.innerHTML = submissions.map(s => {
+        const uncheckManual = [9, 13, 21].filter(mNo => !s.manualGrades || s.manualGrades[mNo] === null);
+        const manualBadge = uncheckManual.length > 0 
+          ? `<span class="text-xs font-semibold px-2 py-0.5 bg-amber-100 text-amber-700 rounded-md">${uncheckManual.join(', ')}번 대기</span>` 
+          : `<span class="text-xs font-semibold px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-md">완료</span>`;
+
+        return `
+          <tr class="hover:bg-slate-50 transition">
+            <td class="p-3 font-semibold text-slate-900">${s.grade}-${s.classNum}-${s.studentNum}</td>
+            <td class="p-3">
+              <button onclick="openDetailModal(${s.id})" class="text-indigo-600 hover:text-indigo-900 font-bold underline underline-offset-4 flex items-center gap-1">
+                ${s.name}
+                <span class="text-[10px] bg-indigo-50 text-indigo-600 border border-indigo-200 px-1 rounded">채점</span>
+              </button>
+            </td>
+            <td class="p-3 text-slate-500">${s.gender}</td>
+            <td class="p-3 font-bold ${s.score >= 80 ? 'text-indigo-600' : 'text-slate-700'}">${s.score}점</td>
+            <td class="p-3">${manualBadge}</td>
+            <td class="p-3 text-xs text-rose-600">${s.wrongList.length > 0 ? s.wrongList.join(', ') + '번' : '<span class="text-emerald-600 font-semibold">만점</span>'}</td>
+          </tr>
+        `;
+      }).join('');
     }
 
-    // 오답 원인 분석 로직
     function diagnoseMistake(q, userAns) {
       if (!userAns || userAns.trim() === "" || userAns === "와") {
         return { reason: "미기입 (빈칸 제출)", color: "text-slate-400 bg-slate-100" };
       }
-
       const cleanUser = cleanStr(userAns);
-
-      // 분수 형식 관련 문항 체크 (5번, 6번)
       if (q.no === 5) {
         if (!userAns.includes("/")) return { reason: "형식 오류 (슬래시 누락/소수 표기)", color: "text-amber-600 bg-amber-50" };
         if (cleanUser === "15/4") return { reason: "개념 오류 (분자·분모 역전)", color: "text-purple-600 bg-purple-50" };
       }
-
       if (q.no === 6) {
         if (!userAns.includes("/")) return { reason: "형식 오류 (분수 슬래시 누락)", color: "text-amber-600 bg-amber-50" };
         if (cleanUser.includes("13/8")) return { reason: "가분수 기입 (대분수 요구)", color: "text-blue-600 bg-blue-50" };
       }
-
-      // 소수점 오타 체크 (콤마를 찍었거나 특수문자 입력)
       if ((q.no === 7 || q.no === 8 || q.no === 19 || q.no === 24) && userAns.includes(",")) {
         return { reason: "입력 오타 (마침표 대신 쉼표 사용)", color: "text-amber-600 bg-amber-50" };
       }
-
-      // 전개도 및 그래프 자가채점 문항
-      if (q.unit.includes("자가채점")) {
-        return { reason: "지필 평가 풀이 미흡", color: "text-rose-600 bg-rose-50" };
-      }
-
-      // 기본 오답 판정
       return { reason: "계산 및 풀이 오답", color: "text-rose-600 bg-rose-50" };
     }
 
-    // 학생 개별 상세 모달 열기
+    // 모달 열기
     function openDetailModal(subId) {
       const submissions = JSON.parse(localStorage.getItem("quiz_submissions") || "[]");
       const student = submissions.find(s => s.id === subId);
       if (!student) return;
 
-      document.getElementById("modalStudentTitle").textContent = `${student.name} 학생 (${student.grade}학년 ${student.classNum}반 ${student.studentNum}번) 상세 답안`;
-      document.getElementById("modalStudentSub").textContent = `총점: ${student.score}점 / 틀린 문항: ${student.wrongList.length}개`;
+      document.getElementById("modalStudentTitle").textContent = `${student.name} 학생 (${student.studentNum}번) 채점 관리`;
+      document.getElementById("modalStudentSub").textContent = `현재 점수: ${student.score}점 (자동 채점 오답: ${student.wrongList.length}문항)`;
 
       const modalContent = document.getElementById("modalContent");
+      modalContent.innerHTML = '';
+
+      // [섹션 1] 교사 직접 채점 영역 (9, 13, 21번)[cite: 1]
+      const manualSection = document.createElement("div");
+      manualSection.className = "space-y-3 bg-indigo-50/60 p-4 rounded-xl border border-indigo-100";
+      manualSection.innerHTML = `<h4 class="font-bold text-indigo-900 text-sm flex items-center gap-1.5">✍️ 서술형/그리기 평가 채점 (문항당 4점)</h4>`;
+
+      const manualList = [
+        { no: 9, title: "9번. 각기둥의 전개도 그리기 (시험지 대조)" },
+        { no: 13, title: "13번. 그림그래프 나타내기 (시험지 대조)" },
+        { no: 21, title: "21번. 교통사고 원인 비율 변화 서술" }
+      ];
+
+      manualList.forEach(m => {
+        const curStatus = student.manualGrades ? student.manualGrades[m.no] : null;
+
+        const row = document.createElement("div");
+        row.className = "flex justify-between items-center bg-white p-3 rounded-lg border border-slate-200";
+        row.innerHTML = `
+          <span class="text-xs font-bold text-slate-800">${m.title}</span>
+          <div class="flex items-center gap-2">
+            <button onclick="setManualGrade(${student.id}, ${m.no}, true)" class="px-3 py-1 rounded text-xs font-bold ${curStatus === true ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-emerald-50'}">O 정답 (+4점)</button>
+            <button onclick="setManualGrade(${student.id}, ${m.no}, false)" class="px-3 py-1 rounded text-xs font-bold ${curStatus === false ? 'bg-rose-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-rose-50'}">X 오답 (0점)</button>
+          </div>
+        `;
+        manualSection.appendChild(row);
+      });
+      modalContent.appendChild(manualSection);
+
+      // [섹션 2] 오답 분석 내역
+      const wrongSection = document.createElement("div");
+      wrongSection.className = "space-y-3";
+      wrongSection.innerHTML = `<h4 class="font-bold text-slate-800 text-sm">단답형 오답 문항 분석</h4>`;
 
       if (student.wrongList.length === 0) {
-        modalContent.innerHTML = `
-          <div class="text-center py-8">
-            <div class="text-4xl mb-2">🎉</div>
-            <div class="font-bold text-slate-800 text-lg">틀린 문항이 없습니다. 만점입니다!</div>
-          </div>`;
+        wrongSection.innerHTML += `<div class="text-sm text-emerald-600 p-3 bg-emerald-50 rounded-lg">틀린 단답형 문항이 없습니다.</div>`;
       } else {
-        modalContent.innerHTML = student.wrongList.map(qNo => {
+        student.wrongList.forEach(qNo => {
           const q = quizConfig.find(item => item.no === qNo);
           const userVal = student.answers ? student.answers[qNo] : "미기록";
-          
-          let correctDisplay = "";
-          if (q.type === 'mixed_fraction') {
-            correctDisplay = `${q.answerNat}과 ${q.answerFrac}`;
-          } else {
-            correctDisplay = q.answer.join(" 또는 ");
-          }
-
+          let correctDisplay = q.type === 'mixed_fraction' ? `${q.answerNat}과 ${q.answerFrac}` : q.answer.join(" 또는 ");
           const diagnosis = diagnoseMistake(q, userVal);
 
-          return `
-            <div class="border border-slate-200 rounded-xl p-3.5 bg-slate-50/50 flex flex-col gap-2">
+          wrongSection.innerHTML += `
+            <div class="border border-slate-200 rounded-xl p-3 bg-slate-50/50 flex flex-col gap-2">
               <div class="flex justify-between items-center">
                 <span class="font-bold text-rose-600 text-sm">${q.no}번 문항</span>
-                <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold ${diagnosis.color}">
-                  ${diagnosis.reason}
-                </span>
+                <span class="text-xs px-2.5 py-0.5 rounded-full font-semibold ${diagnosis.color}">${diagnosis.reason}</span>
               </div>
-              <div class="grid grid-cols-2 gap-2 text-xs pt-1">
+              <div class="grid grid-cols-2 gap-2 text-xs">
                 <div class="bg-white p-2.5 rounded-lg border border-slate-200">
-                  <div class="text-slate-400 font-medium mb-0.5">학생 제출 답안</div>
-                  <div class="font-bold text-slate-900 text-sm truncate">${userVal || "(공백)"} ${q.unit}</div>
+                  <div class="text-slate-400 font-medium mb-0.5">학생 제출</div>
+                  <div class="font-bold text-slate-900 truncate">${userVal || "(공백)"} ${q.unit}</div>
                 </div>
                 <div class="bg-white p-2.5 rounded-lg border border-indigo-100">
                   <div class="text-indigo-400 font-medium mb-0.5">실제 정답</div>
-                  <div class="font-bold text-indigo-600 text-sm truncate">${correctDisplay} ${q.unit}</div>
+                  <div class="font-bold text-indigo-600 truncate">${correctDisplay} ${q.unit}</div>
                 </div>
               </div>
             </div>
           `;
-        }).join('');
+        });
       }
+      modalContent.appendChild(wrongSection);
 
       document.getElementById("detailModal").classList.remove("hidden");
+    }
+
+    // 교사 수동 채점 점수 반영 함수
+    function setManualGrade(subId, qNo, isPass) {
+      let submissions = JSON.parse(localStorage.getItem("quiz_submissions") || "[]");
+      const idx = submissions.findIndex(s => s.id === subId);
+      if (idx === -1) return;
+
+      if (!submissions[idx].manualGrades) {
+        submissions[idx].manualGrades = { 9: null, 13: null, 21: null };
+      }
+
+      const prevStatus = submissions[idx].manualGrades[qNo];
+
+      // 이전 상태와 비교하여 점수 가감
+      if (prevStatus !== true && isPass === true) {
+        submissions[idx].score += 4;
+      } else if (prevStatus === true && isPass === false) {
+        submissions[idx].score = Math.max(0, submissions[idx].score - 4);
+      }
+
+      submissions[idx].manualGrades[qNo] = isPass;
+      localStorage.setItem("quiz_submissions", JSON.stringify(submissions));
+
+      // UI 갱신
+      openDetailModal(subId);
+      loadTeacherAnalytics();
     }
 
     function closeDetailModal() {
