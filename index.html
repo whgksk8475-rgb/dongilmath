@@ -71,7 +71,6 @@
         </div>
       </section>
 
-      <!-- 학생 결과 카드 -->
       <section id="resultCard" class="hidden bg-white rounded-2xl shadow-lg border-2 border-indigo-500 p-6 space-y-4">
         <div class="flex items-center justify-between border-b pb-4">
           <div>
@@ -117,13 +116,18 @@
       </div>
 
       <div class="bg-white rounded-2xl shadow-sm overflow-hidden p-6">
-        <div class="flex justify-between items-center mb-4">
+        <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
           <div>
             <h3 class="text-base font-bold text-slate-800">학생별 제출 현황</h3>
-            <p class="text-xs text-slate-400 mt-0.5">'통계 제외' 체크박스를 선택하면 평균 및 오답률 계산에서 실시간 제외됩니다.</p>
+            <p class="text-xs text-slate-400 mt-0.5">이름 클릭 시 주관식 채점 및 답안 대조 / 잘못 제출된 행은 삭제 가능</p>
           </div>
-          <div class="space-x-2">
-            <button onclick="fetchServerData()" class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-200">새로고침</button>
+          <div class="flex items-center gap-2">
+            <!-- 자동 새로고침 상태 배지 & 토글 -->
+            <button onclick="toggleAutoRefresh()" id="btnAutoRefresh" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5 transition">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              자동 갱신 (5초)
+            </button>
+            <button onclick="fetchServerData(true)" class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-200">새로고침</button>
             <button onclick="downloadCSV()" class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-700">CSV 내보내기</button>
           </div>
         </div>
@@ -134,11 +138,12 @@
               <tr>
                 <th class="p-3 text-center">통계 제외</th>
                 <th class="p-3">학번</th>
-                <th class="p-3">이름 (클릭 채점)</th>
+                <th class="p-3">이름</th>
                 <th class="p-3">성별</th>
                 <th class="p-3">점수</th>
-                <th class="p-3">교사 미채점 문항</th>
+                <th class="p-3">교사 미채점</th>
                 <th class="p-3">틀린 문항</th>
+                <th class="p-3 text-center">관리</th>
               </tr>
             </thead>
             <tbody id="studentTableBody" class="divide-y divide-slate-100"></tbody>
@@ -171,7 +176,9 @@
 
     let isTeacherAuthenticated = false;
     let globalSubmissions = [];
-    let excludedStudentIds = new Set(); // 평균 계산 제외 학생 ID 보관
+    let excludedStudentIds = new Set();
+    let autoRefreshInterval = null;
+    let isAutoRefreshEnabled = true;
 
     const quizConfig = [
       { no: 1, unit: "번", answer: ["4"], type: "select", options: ["1", "2", "3", "4", "5"] },
@@ -356,6 +363,7 @@
         tView.classList.add("hidden");
         btnS.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 text-white transition";
         btnT.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300 transition";
+        stopAutoRefresh();
       } else {
         if (!isTeacherAuthenticated) {
           const pwd = prompt("교사 비밀번호를 입력해주세요.");
@@ -370,24 +378,79 @@
         tView.classList.remove("hidden");
         btnT.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 text-white transition";
         btnS.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300 transition";
-        fetchServerData();
+        fetchServerData(true);
+        if (isAutoRefreshEnabled) startAutoRefresh();
       }
     }
 
-    async function fetchServerData() {
+    // 서버 데이터 가져오기 (silent: 주기적 갱신 시 로딩 텍스트 미표시)
+    async function fetchServerData(showLoading = false) {
       const tbody = document.getElementById("studentTableBody");
-      tbody.innerHTML = `<tr><td colspan="7" class="text-center p-6 text-slate-400">데이터를 불러오는 중입니다...</td></tr>`;
+      if (showLoading && globalSubmissions.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center p-6 text-slate-400">데이터를 불러오는 중입니다...</td></tr>`;
+      }
 
       try {
         const res = await fetch(GOOGLE_API_URL);
-        globalSubmissions = await res.json();
+        const data = await res.json();
+        globalSubmissions = data;
         recalculateAndRender();
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center p-6 text-rose-500 font-bold">데이터를 가져오지 못했습니다.</td></tr>`;
+        if (showLoading) {
+          tbody.innerHTML = `<tr><td colspan="8" class="text-center p-6 text-rose-500 font-bold">데이터를 가져오지 못했습니다.</td></tr>`;
+        }
       }
     }
 
-    // 제외 체크박스 토글 함수
+    // 자동 갱신 제어 함수
+    function startAutoRefresh() {
+      stopAutoRefresh();
+      autoRefreshInterval = setInterval(() => {
+        // 모달창이 열려있지 않을 때만 백그라운드 갱신
+        const modal = document.getElementById("detailModal");
+        if (modal.classList.contains("hidden")) {
+          fetchServerData(false);
+        }
+      }, 5000);
+    }
+
+    function stopAutoRefresh() {
+      if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+      }
+    }
+
+    function toggleAutoRefresh() {
+      isAutoRefreshEnabled = !isAutoRefreshEnabled;
+      const btn = document.getElementById("btnAutoRefresh");
+      if (isAutoRefreshEnabled) {
+        btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5 transition";
+        btn.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> 자동 갱신 (5초)`;
+        startAutoRefresh();
+      } else {
+        btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-500 border border-slate-200 flex items-center gap-1.5 transition";
+        btn.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-400"></span> 자동 갱신 꺼짐`;
+        stopAutoRefresh();
+      }
+    }
+
+    // 개별 학생 데이터 삭제 (시트 및 로컬 동기화)
+    async function deleteSubmission(subId, studentName) {
+      if (!confirm(`정말 '${studentName}' 학생의 제출 기록을 삭제하시겠습니까?\n구글 스프레드시트에서도 완전히 삭제됩니다.`)) {
+        return;
+      }
+
+      // 화면에서 즉시 제거 (빠른 UI 반응)
+      globalSubmissions = globalSubmissions.filter(s => s.id !== subId);
+      excludedStudentIds.delete(subId);
+      recalculateAndRender();
+
+      // 서버에 삭제 요청 전송
+      await syncToServer({ action: "delete", id: subId });
+      fetchServerData(false);
+    }
+
     function toggleExcludeStudent(subId) {
       if (excludedStudentIds.has(subId)) {
         excludedStudentIds.delete(subId);
@@ -397,7 +460,6 @@
       recalculateAndRender();
     }
 
-    // 통계 재계산 및 화면 갱신
     function recalculateAndRender() {
       const tbody = document.getElementById("studentTableBody");
 
@@ -406,11 +468,10 @@
         document.getElementById("statClassAvg").textContent = "0점";
         document.getElementById("statMaleAvg").textContent = "0점";
         document.getElementById("statFemaleAvg").textContent = "0점";
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center p-6 text-slate-400">제출된 데이터가 없습니다.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center p-6 text-slate-400">제출된 데이터가 없습니다.</td></tr>`;
         return;
       }
 
-      // 통계에 포함할 학생들만 필터링
       const activeList = globalSubmissions.filter(s => !excludedStudentIds.has(s.id));
       const excludedCount = excludedStudentIds.size;
 
@@ -430,7 +491,6 @@
         document.getElementById("statFemaleAvg").textContent = "0점";
       }
 
-      // 오답률 집계 (통계 포함 학생 기준)
       const wrongCounts = {};
       quizConfig.forEach(q => wrongCounts[q.no] = 0);
       activeList.forEach(s => {
@@ -455,7 +515,6 @@
           </div>`;
       }).join('');
 
-      // 학생 표 렌더링
       globalSubmissions.sort((a, b) => Number(a.studentNum) - Number(b.studentNum));
 
       tbody.innerHTML = globalSubmissions.map(s => {
@@ -468,7 +527,7 @@
         return `
           <tr class="transition ${isExcluded ? 'bg-slate-100/80 text-slate-400 opacity-60' : 'hover:bg-slate-50'}">
             <td class="p-3 text-center">
-              <input type="checkbox" onchange="toggleExcludeStudent(${s.id})" ${isExcluded ? 'checked' : ''} class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer" title="체크 시 평균 및 통계에서 제외됩니다." />
+              <input type="checkbox" onchange="toggleExcludeStudent(${s.id})" ${isExcluded ? 'checked' : ''} class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer" title="체크 시 통계에서 제외됩니다." />
             </td>
             <td class="p-3 font-semibold ${isExcluded ? 'line-through text-slate-400' : 'text-slate-900'}">${s.grade}-${s.classNum}-${s.studentNum}</td>
             <td class="p-3">
@@ -480,6 +539,11 @@
             <td class="p-3 font-bold ${isExcluded ? 'text-slate-500' : (s.score >= 80 ? 'text-indigo-600' : 'text-slate-700')}">${s.score}점</td>
             <td class="p-3">${manualBadge}</td>
             <td class="p-3 text-xs text-rose-600">${s.wrongList.length > 0 ? s.wrongList.join(', ') + '번' : '<span class="text-emerald-600 font-semibold">만점</span>'}</td>
+            <td class="p-3 text-center">
+              <button onclick="deleteSubmission(${s.id}, '${s.name}')" class="px-2.5 py-1 text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg transition" title="이 기록을 영구 삭제합니다.">
+                삭제
+              </button>
+            </td>
           </tr>`;
       }).join('');
     }
