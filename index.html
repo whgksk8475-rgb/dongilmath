@@ -94,7 +94,7 @@
     <section id="teacherView" class="hidden space-y-6">
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="bg-white p-5 rounded-2xl shadow-sm">
-          <div class="text-xs font-semibold text-slate-400">총 응시 인원</div>
+          <div class="text-xs font-semibold text-slate-400">통계 반영 인원 (제외 인원)</div>
           <div class="text-2xl font-bold text-slate-900 mt-1" id="statTotalCount">0명</div>
         </div>
         <div class="bg-white p-5 rounded-2xl shadow-sm">
@@ -112,7 +112,7 @@
       </div>
 
       <div class="bg-white p-6 rounded-2xl shadow-sm">
-        <h3 class="text-base font-bold text-slate-800 mb-4">문항별 오답률 분석</h3>
+        <h3 class="text-base font-bold text-slate-800 mb-4">문항별 오답률 분석 (통계 반영 기준)</h3>
         <div id="questionStatsContainer" class="grid grid-cols-5 sm:grid-cols-10 gap-2"></div>
       </div>
 
@@ -120,10 +120,10 @@
         <div class="flex justify-between items-center mb-4">
           <div>
             <h3 class="text-base font-bold text-slate-800">학생별 제출 현황</h3>
-            <p class="text-xs text-slate-400 mt-0.5">이름을 클릭하여 수동 채점(O/X) 및 오답 원인을 확인하세요.</p>
+            <p class="text-xs text-slate-400 mt-0.5">'통계 제외' 체크박스를 선택하면 평균 및 오답률 계산에서 실시간 제외됩니다.</p>
           </div>
           <div class="space-x-2">
-            <button onclick="loadTeacherAnalytics()" class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-200">새로고침</button>
+            <button onclick="fetchServerData()" class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-200">새로고침</button>
             <button onclick="downloadCSV()" class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-700">CSV 내보내기</button>
           </div>
         </div>
@@ -132,6 +132,7 @@
           <table class="w-full text-left text-sm text-slate-600">
             <thead class="bg-slate-50 text-slate-500 font-semibold border-b">
               <tr>
+                <th class="p-3 text-center">통계 제외</th>
                 <th class="p-3">학번</th>
                 <th class="p-3">이름 (클릭 채점)</th>
                 <th class="p-3">성별</th>
@@ -158,9 +159,7 @@
         </div>
         <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-700 text-2xl font-bold p-1">&times;</button>
       </div>
-
       <div class="p-5 overflow-y-auto space-y-5" id="modalContent"></div>
-
       <div class="p-4 border-t bg-slate-50 flex justify-end">
         <button onclick="closeDetailModal()" class="px-5 py-2 bg-slate-800 text-white rounded-xl text-sm font-semibold hover:bg-slate-900">닫기</button>
       </div>
@@ -168,11 +167,11 @@
   </div>
 
   <script>
-    // ⚠️ 아래 큰따옴표 안에 1단계에서 복사한 Google Apps Script 웹앱 URL을 붙여넣으세요.
     const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbx2Aywvlh7K6BAZbVeCWYp-4E6F77Bp3sg_MSzC6EVYfm6Wh4bewDuSulu1IyxBiwrD/exec";
 
     let isTeacherAuthenticated = false;
     let globalSubmissions = [];
+    let excludedStudentIds = new Set(); // 평균 계산 제외 학생 ID 보관
 
     const quizConfig = [
       { no: 1, unit: "번", answer: ["4"], type: "select", options: ["1", "2", "3", "4", "5"] },
@@ -246,9 +245,7 @@
       return val.toString().replace(/\s+/g, "");
     }
 
-    // 서버로 데이터 전송 (Google Apps Script)
     async function syncToServer(data) {
-      if (!GOOGLE_API_URL || GOOGLE_API_URL.includes("여기에")) return;
       try {
         await fetch(GOOGLE_API_URL, {
           method: "POST",
@@ -319,7 +316,6 @@
         date: new Date().toLocaleString()
       };
 
-      // 구글 스프레드시트로 전송
       await syncToServer(submission);
 
       submitBtn.disabled = false;
@@ -374,51 +370,70 @@
         tView.classList.remove("hidden");
         btnT.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 text-white transition";
         btnS.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300 transition";
-        loadTeacherAnalytics();
+        fetchServerData();
       }
     }
 
-    // 서버(Google Sheets)에서 데이터 불러오기
-    async function loadTeacherAnalytics() {
+    async function fetchServerData() {
       const tbody = document.getElementById("studentTableBody");
-      tbody.innerHTML = `<tr><td colspan="6" class="text-center p-6 text-slate-400">데이터를 불러오는 중입니다...</td></tr>`;
-
-      if (!GOOGLE_API_URL || GOOGLE_API_URL.includes("여기에")) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-6 text-rose-500 font-bold">⚠️ Google Apps Script URL이 설정되지 않았습니다.</td></tr>`;
-        return;
-      }
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center p-6 text-slate-400">데이터를 불러오는 중입니다...</td></tr>`;
 
       try {
         const res = await fetch(GOOGLE_API_URL);
         globalSubmissions = await res.json();
+        recalculateAndRender();
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-6 text-rose-500 font-bold">데이터를 가져오지 못했습니다. URL과 권한 설정을 확인하세요.</td></tr>`;
-        return;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center p-6 text-rose-500 font-bold">데이터를 가져오지 못했습니다.</td></tr>`;
       }
+    }
 
-      const totalCount = globalSubmissions.length;
-      document.getElementById("statTotalCount").textContent = `${totalCount}명`;
+    // 제외 체크박스 토글 함수
+    function toggleExcludeStudent(subId) {
+      if (excludedStudentIds.has(subId)) {
+        excludedStudentIds.delete(subId);
+      } else {
+        excludedStudentIds.add(subId);
+      }
+      recalculateAndRender();
+    }
 
-      if (totalCount === 0) {
+    // 통계 재계산 및 화면 갱신
+    function recalculateAndRender() {
+      const tbody = document.getElementById("studentTableBody");
+
+      if (globalSubmissions.length === 0) {
+        document.getElementById("statTotalCount").textContent = "0명";
         document.getElementById("statClassAvg").textContent = "0점";
         document.getElementById("statMaleAvg").textContent = "0점";
         document.getElementById("statFemaleAvg").textContent = "0점";
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-6 text-slate-400">제출된 데이터가 없습니다.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center p-6 text-slate-400">제출된 데이터가 없습니다.</td></tr>`;
         return;
       }
 
-      const totalScore = globalSubmissions.reduce((acc, cur) => acc + cur.score, 0);
-      document.getElementById("statClassAvg").textContent = `${(totalScore / totalCount).toFixed(1)}점`;
+      // 통계에 포함할 학생들만 필터링
+      const activeList = globalSubmissions.filter(s => !excludedStudentIds.has(s.id));
+      const excludedCount = excludedStudentIds.size;
 
-      const males = globalSubmissions.filter(s => s.gender === "남");
-      const females = globalSubmissions.filter(s => s.gender === "여");
-      document.getElementById("statMaleAvg").textContent = `${males.length ? (males.reduce((acc, c) => acc + c.score, 0) / males.length).toFixed(1) : 0}점`;
-      document.getElementById("statFemaleAvg").textContent = `${females.length ? (females.reduce((acc, c) => acc + c.score, 0) / females.length).toFixed(1) : 0}점`;
+      document.getElementById("statTotalCount").textContent = `${activeList.length}명 ${excludedCount > 0 ? `(${excludedCount}명 제외)` : ''}`;
 
-      // 오답률
+      if (activeList.length > 0) {
+        const totalScore = activeList.reduce((acc, cur) => acc + cur.score, 0);
+        document.getElementById("statClassAvg").textContent = `${(totalScore / activeList.length).toFixed(1)}점`;
+
+        const males = activeList.filter(s => s.gender === "남");
+        const females = activeList.filter(s => s.gender === "여");
+        document.getElementById("statMaleAvg").textContent = `${males.length ? (males.reduce((acc, c) => acc + c.score, 0) / males.length).toFixed(1) : 0}점`;
+        document.getElementById("statFemaleAvg").textContent = `${females.length ? (females.reduce((acc, c) => acc + c.score, 0) / females.length).toFixed(1) : 0}점`;
+      } else {
+        document.getElementById("statClassAvg").textContent = "0점";
+        document.getElementById("statMaleAvg").textContent = "0점";
+        document.getElementById("statFemaleAvg").textContent = "0점";
+      }
+
+      // 오답률 집계 (통계 포함 학생 기준)
       const wrongCounts = {};
       quizConfig.forEach(q => wrongCounts[q.no] = 0);
-      globalSubmissions.forEach(s => {
+      activeList.forEach(s => {
         s.wrongList.forEach(qNo => wrongCounts[qNo]++);
         if (s.manualGrades) {
           [9, 13, 21].forEach(mNo => {
@@ -428,7 +443,7 @@
       });
 
       document.getElementById("questionStatsContainer").innerHTML = quizConfig.map(q => {
-        const wrongRate = Math.round((wrongCounts[q.no] / totalCount) * 100);
+        const wrongRate = activeList.length > 0 ? Math.round((wrongCounts[q.no] / activeList.length) * 100) : 0;
         let badgeColor = "bg-slate-100 text-slate-600";
         if (wrongRate >= 50) badgeColor = "bg-rose-100 text-rose-700 font-bold";
         else if (wrongRate >= 30) badgeColor = "bg-amber-100 text-amber-700 font-bold";
@@ -440,24 +455,29 @@
           </div>`;
       }).join('');
 
-      // 학생 표
+      // 학생 표 렌더링
       globalSubmissions.sort((a, b) => Number(a.studentNum) - Number(b.studentNum));
+
       tbody.innerHTML = globalSubmissions.map(s => {
+        const isExcluded = excludedStudentIds.has(s.id);
         const uncheckManual = [9, 13, 21].filter(mNo => !s.manualGrades || s.manualGrades[mNo] === null);
         const manualBadge = uncheckManual.length > 0 
           ? `<span class="text-xs font-semibold px-2 py-0.5 bg-amber-100 text-amber-700 rounded-md">${uncheckManual.join(', ')}번 대기</span>` 
           : `<span class="text-xs font-semibold px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-md">완료</span>`;
 
         return `
-          <tr class="hover:bg-slate-50 transition">
-            <td class="p-3 font-semibold text-slate-900">${s.grade}-${s.classNum}-${s.studentNum}</td>
+          <tr class="transition ${isExcluded ? 'bg-slate-100/80 text-slate-400 opacity-60' : 'hover:bg-slate-50'}">
+            <td class="p-3 text-center">
+              <input type="checkbox" onchange="toggleExcludeStudent(${s.id})" ${isExcluded ? 'checked' : ''} class="w-4 h-4 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer" title="체크 시 평균 및 통계에서 제외됩니다." />
+            </td>
+            <td class="p-3 font-semibold ${isExcluded ? 'line-through text-slate-400' : 'text-slate-900'}">${s.grade}-${s.classNum}-${s.studentNum}</td>
             <td class="p-3">
-              <button onclick="openDetailModal(${s.id})" class="text-indigo-600 hover:text-indigo-900 font-bold underline underline-offset-4">
+              <button onclick="openDetailModal(${s.id})" class="font-bold underline underline-offset-4 ${isExcluded ? 'text-slate-500' : 'text-indigo-600 hover:text-indigo-900'}">
                 ${s.name}
               </button>
             </td>
-            <td class="p-3 text-slate-500">${s.gender}</td>
-            <td class="p-3 font-bold ${s.score >= 80 ? 'text-indigo-600' : 'text-slate-700'}">${s.score}점</td>
+            <td class="p-3">${s.gender}</td>
+            <td class="p-3 font-bold ${isExcluded ? 'text-slate-500' : (s.score >= 80 ? 'text-indigo-600' : 'text-slate-700')}">${s.score}점</td>
             <td class="p-3">${manualBadge}</td>
             <td class="p-3 text-xs text-rose-600">${s.wrongList.length > 0 ? s.wrongList.join(', ') + '번' : '<span class="text-emerald-600 font-semibold">만점</span>'}</td>
           </tr>`;
@@ -522,7 +542,7 @@
             <div class="border border-slate-200 rounded-xl p-3 bg-slate-50/50 flex flex-col gap-2">
               <div class="flex justify-between items-center">
                 <span class="font-bold text-rose-600 text-sm">${q.no}번 문항</span>
-                <span class="text-xs px-2 py-0.5 rounded font-semibold ${diag.color}">${diag.reason}</span>
+                <span class="text-xs px-2.5 py-0.5 rounded font-semibold ${diag.color}">${diag.reason}</span>
               </div>
               <div class="grid grid-cols-2 gap-2 text-xs">
                 <div class="bg-white p-2.5 rounded-lg border border-slate-200">
@@ -555,10 +575,9 @@
 
       globalSubmissions[idx].manualGrades[qNo] = isPass;
 
-      // 수정 데이터 서버 재동기화
       await syncToServer(globalSubmissions[idx]);
       openDetailModal(subId);
-      loadTeacherAnalytics();
+      recalculateAndRender();
     }
 
     function closeDetailModal() {
@@ -567,9 +586,10 @@
 
     function downloadCSV() {
       if (globalSubmissions.length === 0) return alert("다운로드할 데이터가 없습니다.");
-      let csv = "\uFEFF학년,반,번호,이름,성별,점수,틀린문항\n";
+      let csv = "\uFEFF학년,반,번호,이름,성별,점수,통계제외여부,틀린문항\n";
       globalSubmissions.forEach(s => {
-        csv += `${s.grade},${s.classNum},${s.studentNum},${s.name},${s.gender},${s.score},"${s.wrongList.join(', ')}"\n`;
+        const isExcluded = excludedStudentIds.has(s.id) ? "제외" : "포함";
+        csv += `${s.grade},${s.classNum},${s.studentNum},${s.name},${s.gender},${s.score},${isExcluded},"${s.wrongList.join(', ')}"\n`;
       });
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const a = document.createElement("a");
