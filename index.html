@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>6학년 1학기 수학 기말평가 자동 채점기</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen p-4 md:p-8">
+
+  <div class="max-w-4xl mx-auto space-y-8">
+    
+    <!-- 헤더 및 모드 전환 -->
+    <header class="bg-white rounded-2xl shadow-sm p-6 flex flex-wrap justify-between items-center gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900">수학 6-1 총기말평가 2회 자동 채점</h1>
+        <p class="text-sm text-slate-500 mt-1">답안의 숫자 및 기호 부분만 정확히 입력하세요.</p>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="switchView('student')" id="btnStudent" class="px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 text-white transition">학생 답안 입력</button>
+        <button onclick="switchView('teacher')" id="btnTeacher" class="px-4 py-2 rounded-xl text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300 transition">교사 분석 대시보드</button>
+      </div>
+    </header>
+
+    <!-- [1] 학생 화면 -->
+    <main id="studentView" class="space-y-6">
+      
+      <!-- 인적사항 입력 카드 -->
+      <section class="bg-white rounded-2xl shadow-sm p-6">
+        <h2 class="text-lg font-bold mb-4 text-slate-800">학생 정보 입력</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-4">
+          <div>
+            <label class="text-xs font-semibold text-slate-500">학년</label>
+            <input type="number" id="grade" value="6" class="w-full mt-1 p-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-500">반</label>
+            <input type="number" id="classNum" placeholder="예: 1" class="w-full mt-1 p-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-500">번호</label>
+            <input type="number" id="studentNum" placeholder="예: 15" class="w-full mt-1 p-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-500">이름</label>
+            <input type="text" id="name" placeholder="홍길동" class="w-full mt-1 p-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-500">성별</label>
+            <select id="gender" class="w-full mt-1 p-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
+              <option value="남">남학생</option>
+              <option value="여">여학생</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- 답안 입력 영역 -->
+      <section class="bg-white rounded-2xl shadow-sm p-6">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-lg font-bold text-slate-800">문항별 정답 입력 (총 25문항, 문항당 4점)</h2>
+          <span class="text-xs bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full font-medium">분수는 4/15 또는 1 5/8 형태로 입력</span>
+        </div>
+
+        <div id="questionsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <!-- JS 렌더링 -->
+        </div>
+
+        <div class="mt-8 text-center">
+          <button onclick="submitAnswers()" class="w-full md:w-1/2 py-3 bg-indigo-600 text-white font-bold rounded-xl shadow-md hover:bg-indigo-700 transition">
+            채점하기 및 제출
+          </button>
+        </div>
+      </section>
+
+      <!-- 결과 확인 모달 / 카드 -->
+      <section id="resultCard" class="hidden bg-white rounded-2xl shadow-lg border-2 border-indigo-500 p-6 space-y-4">
+        <div class="flex items-center justify-between border-b pb-4">
+          <div>
+            <h3 class="text-xl font-bold text-slate-900" id="resultGreeting">채점 결과</h3>
+            <p class="text-sm text-slate-500">오답 노트를 확인하고 틀린 문제를 다시 풀어보세요.</p>
+          </div>
+          <div class="text-right">
+            <span class="text-3xl font-extrabold text-indigo-600" id="resultScore">0</span>
+            <span class="text-slate-400 font-bold">/ 100점</span>
+          </div>
+        </div>
+        <div>
+          <h4 class="font-bold text-slate-700 mb-2">틀린 문항 분석</h4>
+          <div id="wrongItemsContainer" class="space-y-2 text-sm"></div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- [2] 교사 분석 대시보드 화면 -->
+    <section id="teacherView" class="hidden space-y-6">
+      
+      <!-- 통계 카드 요약 -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-2xl shadow-sm">
+          <div class="text-xs font-semibold text-slate-400">총 응시 인원</div>
+          <div class="text-2xl font-bold text-slate-900 mt-1" id="statTotalCount">0명</div>
+        </div>
+        <div class="bg-white p-5 rounded-2xl shadow-sm">
+          <div class="text-xs font-semibold text-slate-400">학급 전체 평균</div>
+          <div class="text-2xl font-bold text-indigo-600 mt-1" id="statClassAvg">0점</div>
+        </div>
+        <div class="bg-white p-5 rounded-2xl shadow-sm">
+          <div class="text-xs font-semibold text-slate-400">남학생 평균</div>
+          <div class="text-2xl font-bold text-blue-600 mt-1" id="statMaleAvg">0점</div>
+        </div>
+        <div class="bg-white p-5 rounded-2xl shadow-sm">
+          <div class="text-xs font-semibold text-slate-400">여학생 평균</div>
+          <div class="text-2xl font-bold text-pink-600 mt-1" id="statFemaleAvg">0점</div>
+        </div>
+      </div>
+
+      <!-- 문항별 오답률 랭킹 -->
+      <div class="bg-white p-6 rounded-2xl shadow-sm">
+        <h3 class="text-base font-bold text-slate-800 mb-4">문항별 오답률 분석</h3>
+        <div id="questionStatsContainer" class="grid grid-cols-5 sm:grid-cols-10 gap-2">
+          <!-- JS 렌더링 -->
+        </div>
+      </div>
+
+      <!-- 학생별 상세 결과 표 -->
+      <div class="bg-white rounded-2xl shadow-sm overflow-hidden p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-base font-bold text-slate-800">학생별 제출 현황</h3>
+          <div class="space-x-2">
+            <button onclick="downloadCSV()" class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-semibold hover:bg-emerald-700">CSV 내보내기</button>
+            <button onclick="clearAllData()" class="px-3 py-1.5 bg-red-100 text-red-600 rounded-lg text-xs font-semibold hover:bg-red-200">데이터 초기화</button>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-slate-600">
+            <thead class="bg-slate-50 text-slate-500 font-semibold border-b">
+              <tr>
+                <th class="p-3">학번</th>
+                <th class="p-3">이름</th>
+                <th class="p-3">성별</th>
+                <th class="p-3">점수</th>
+                <th class="p-3">틀린 문항 번호</th>
+              </tr>
+            </thead>
+            <tbody id="studentTableBody" class="divide-y divide-slate-100">
+              <!-- JS 렌더링 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <script>
+    // 문항 데이터베이스 (제공된 시험지 기반 정답 및 단위)[cite: 1]
+    const quizConfig = [
+      { no: 1, unit: "번", answer: ["4"], type: "select", options: ["1", "2", "3", "4", "5"] },
+      { no: 2, unit: "cm", answer: ["10"] },
+      { no: 3, unit: "배", answer: ["4"] },
+      { no: 4, unit: "", answer: ["나"], type: "select", options: ["가", "나"] },
+      { no: 5, unit: "", answer: ["4/15"] },
+      { no: 6, unit: "m²", answer: ["1 5/8", "13/8"] },
+      { no: 7, unit: "g", answer: ["3.75"] },
+      { no: 8, unit: "m", answer: ["0.29"] },
+      { no: 9, unit: "(자가채점)", answer: ["맞음"], type: "select", options: ["맞음", "틀림"] }, // 전개도 그리기[cite: 1]
+      { no: 10, unit: "기호", answer: ["<"], type: "select", options: [">", "=", "<"] },
+      { no: 11, unit: "%", answer: ["35"] },
+      { no: 12, unit: "명", answer: ["45"] },
+      { no: 13, unit: "(자가채점)", answer: ["맞음"], type: "select", options: ["맞음", "틀림"] }, // 그림그래프 그리기[cite: 1]
+      { no: 14, unit: "대", answer: ["180"] },
+      { no: 15, unit: "개", answer: ["14"] },
+      { no: 16, unit: "cm", answer: ["55"] },
+      { no: 17, unit: "가게", answer: ["나"] },
+      { no: 18, unit: "", answer: ["태준 아버지", "태준아버지"] },
+      { no: 19, unit: "cm", answer: ["0.45"] },
+      { no: 20, unit: "%", answer: ["24"] },
+      { no: 21, unit: "(자가채점)", answer: ["맞음"], type: "select", options: ["맞음", "틀림"] }, // 서술형 설명[cite: 1]
+      { no: 22, unit: "개", answer: ["1536"] },
+      { no: 23, unit: "cm³", answer: ["96"] },
+      { no: 24, unit: "km", answer: ["0.13"] },
+      { no: 25, unit: "cm²", answer: ["24"] }
+    ];
+
+    // 문항 UI 생성
+    function renderQuizInputs() {
+      const container = document.getElementById("questionsContainer");
+      container.innerHTML = quizConfig.map(q => {
+        let inputField = '';
+        if (q.type === 'select') {
+          inputField = `
+            <select id="ans_${q.no}" class="border rounded-lg p-2 text-center text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
+              <option value="">선택</option>
+              ${q.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+            </select>`;
+        } else {
+          inputField = `
+            <input type="text" id="ans_${q.no}" placeholder="답" class="w-24 border rounded-lg p-2 text-center text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-500" />`;
+        }
+
+        return `
+          <div class="flex items-center justify-between border border-slate-100 bg-slate-50/50 p-3 rounded-xl">
+            <span class="font-bold text-slate-700 w-12">${q.no}번</span>
+            <div class="flex items-center gap-1.5">
+              ${inputField}
+              <span class="text-xs text-slate-500 font-medium min-w-[28px]">${q.unit}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 답안 정규화 비교 함수
+    function normalize(val) {
+      if (!val) return "";
+      return val.toString().trim().replace(/\s+/g, " ");
+    }
+
+    // 답안 채점 및 제출
+    function submitAnswers() {
+      const classNum = document.getElementById("classNum").value.trim();
+      const studentNum = document.getElementById("studentNum").value.trim();
+      const name = document.getElementById("name").value.trim();
+      const gender = document.getElementById("gender").value;
+
+      if (!classNum || !studentNum || !name) {
+        alert("반, 번호, 이름을 모두 입력해주세요.");
+        return;
+      }
+
+      let score = 0;
+      let wrongQuestions = [];
+
+      quizConfig.forEach(q => {
+        const inputEl = document.getElementById(`ans_${q.no}`);
+        const userVal = normalize(inputEl.value);
+        const isCorrect = q.answer.some(ans => normalize(ans) === userVal);
+
+        if (isCorrect) {
+          score += 4;
+        } else {
+          wrongQuestions.push({
+            no: q.no,
+            userVal: userVal || "(미입력)",
+            correctVal: q.answer[0] + (q.unit ? ` ${q.unit}` : '')
+          });
+        }
+      });
+
+      // 학생 제출 데이터 객체
+      const submission = {
+        id: Date.now(),
+        grade: document.getElementById("grade").value,
+        classNum,
+        studentNum,
+        name,
+        gender,
+        score,
+        wrongList: wrongQuestions.map(w => w.no),
+        date: new Date().toLocaleString()
+      };
+
+      // LocalStorage 저장
+      const existing = JSON.parse(localStorage.getItem("quiz_submissions") || "[]");
+      existing.push(submission);
+      localStorage.setItem("quiz_submissions", JSON.stringify(existing));
+
+      // 결과 화면 표시
+      showStudentResult(name, score, wrongQuestions);
+    }
+
+    function showStudentResult(name, score, wrongQuestions) {
+      const card = document.getElementById("resultCard");
+      const greeting = document.getElementById("resultGreeting");
+      const scoreEl = document.getElementById("resultScore");
+      const wrongListEl = document.getElementById("wrongItemsContainer");
+
+      card.classList.remove("hidden");
+      greeting.textContent = `${name} 학생의 채점 결과`;
+      scoreEl.textContent = score;
+
+      if (wrongQuestions.length === 0) {
+        wrongListEl.innerHTML = `<div class="p-3 bg-emerald-50 text-emerald-700 rounded-lg font-medium">모든 문제를 맞혔습니다! 완벽합니다.</div>`;
+      } else {
+        wrongListEl.innerHTML = wrongQuestions.map(w => `
+          <div class="flex justify-between items-center p-2.5 bg-rose-50/70 border border-rose-100 rounded-lg text-slate-700">
+            <span class="font-bold text-rose-600">${w.no}번 문항</span>
+            <span>내 답안: <strong class="text-slate-900">${w.userVal}</strong></span>
+            <span>정답: <strong class="text-indigo-600">${w.correctVal}</strong></span>
+          </div>
+        `).join('');
+      }
+
+      window.scrollTo({ top: card.offsetTop - 20, behavior: 'smooth' });
+    }
+
+    // 뷰 전환 (학생 vs 교사)
+    function switchView(view) {
+      const sView = document.getElementById("studentView");
+      const tView = document.getElementById("teacherView");
+      const btnS = document.getElementById("btnStudent");
+      const btnT = document.getElementById("btnTeacher");
+
+      if (view === 'student') {
+        sView.classList.remove("hidden");
+        tView.classList.add("hidden");
+        btnS.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 text-white transition";
+        btnT.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300 transition";
+      } else {
+        sView.classList.add("hidden");
+        tView.classList.remove("hidden");
+        btnT.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 text-white transition";
+        btnS.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300 transition";
+        loadTeacherAnalytics();
+      }
+    }
+
+    // 교사 데이터 통계 계산 및 렌더링
+    function loadTeacherAnalytics() {
+      const submissions = JSON.parse(localStorage.getItem("quiz_submissions") || "[]");
+
+      const totalCount = submissions.length;
+      document.getElementById("statTotalCount").textContent = `${totalCount}명`;
+
+      if (totalCount === 0) {
+        document.getElementById("statClassAvg").textContent = "0점";
+        document.getElementById("statMaleAvg").textContent = "0점";
+        document.getElementById("statFemaleAvg").textContent = "0점";
+        document.getElementById("studentTableBody").innerHTML = `<tr><td colspan="5" class="text-center p-6 text-slate-400">제출된 데이터가 없습니다.</td></tr>`;
+        return;
+      }
+
+      // 평균 계산
+      const totalScore = submissions.reduce((acc, cur) => acc + cur.score, 0);
+      const classAvg = (totalScore / totalCount).toFixed(1);
+
+      const males = submissions.filter(s => s.gender === "남");
+      const females = submissions.filter(s => s.gender === "여");
+
+      const maleAvg = males.length ? (males.reduce((acc, c) => acc + c.score, 0) / males.length).toFixed(1) : 0;
+      const femaleAvg = females.length ? (females.reduce((acc, c) => acc + c.score, 0) / females.length).toFixed(1) : 0;
+
+      document.getElementById("statClassAvg").textContent = `${classAvg}점`;
+      document.getElementById("statMaleAvg").textContent = `${maleAvg}점`;
+      document.getElementById("statFemaleAvg").textContent = `${femaleAvg}점`;
+
+      // 문항별 오답률 계산
+      const wrongCounts = {};
+      quizConfig.forEach(q => wrongCounts[q.no] = 0);
+      submissions.forEach(s => {
+        s.wrongList.forEach(qNo => wrongCounts[qNo]++);
+      });
+
+      const qStatsContainer = document.getElementById("questionStatsContainer");
+      qStatsContainer.innerHTML = quizConfig.map(q => {
+        const wrongRate = Math.round((wrongCounts[q.no] / totalCount) * 100);
+        let badgeColor = "bg-slate-100 text-slate-600";
+        if (wrongRate >= 50) badgeColor = "bg-rose-100 text-rose-700 font-bold";
+        else if (wrongRate >= 30) badgeColor = "bg-amber-100 text-amber-700 font-bold";
+
+        return `
+          <div class="border rounded-xl p-2 text-center flex flex-col items-center">
+            <span class="text-xs text-slate-400 font-medium">${q.no}번</span>
+            <span class="text-xs px-1.5 py-0.5 mt-1 rounded ${badgeColor}">${wrongRate}%</span>
+          </div>
+        `;
+      }).join('');
+
+      // 학생별 테이블 렌더링
+      const tbody = document.getElementById("studentTableBody");
+      // 번호 순 정렬
+      submissions.sort((a, b) => Number(a.studentNum) - Number(b.studentNum));
+
+      tbody.innerHTML = submissions.map(s => `
+        <tr class="hover:bg-slate-50/80 transition">
+          <td class="p-3 font-semibold text-slate-900">${s.grade}-${s.classNum}-${s.studentNum}</td>
+          <td class="p-3 font-medium text-slate-800">${s.name}</td>
+          <td class="p-3 text-slate-500">${s.gender}</td>
+          <td class="p-3 font-bold ${s.score >= 80 ? 'text-indigo-600' : 'text-slate-700'}">${s.score}점</td>
+          <td class="p-3 text-xs text-rose-600">${s.wrongList.length > 0 ? s.wrongList.join(', ') + '번' : '<span class="text-emerald-600 font-semibold">만점</span>'}</td>
+        </tr>
+      `).join('');
+    }
+
+    // CSV 다운로드
+    function downloadCSV() {
+      const submissions = JSON.parse(localStorage.getItem("quiz_submissions") || "[]");
+      if (submissions.length === 0) return alert("다운로드할 데이터가 없습니다.");
+
+      let csv = "\uFEFF학년,반,번호,이름,성별,점수,틀린문항\n";
+      submissions.forEach(s => {
+        csv += `${s.grade},${s.classNum},${s.studentNum},${s.name},${s.gender},${s.score},"${s.wrongList.join(', ')}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `수학평가_결과_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+    }
+
+    // 데이터 초기화
+    function clearAllData() {
+      if (confirm("정말 모든 학생 응시 데이터를 삭제하시겠습니까?")) {
+        localStorage.removeItem("quiz_submissions");
+        loadTeacherAnalytics();
+      }
+    }
+
+    // 초기 실행
+    renderQuizInputs();
+  </script>
+</body>
+</html>
