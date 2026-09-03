@@ -71,7 +71,7 @@
         </div>
       </section>
 
-      <!-- 학생 결과 카드 (정답 비공개) -->
+      <!-- 학생 결과 카드 -->
       <section id="resultCard" class="hidden bg-white rounded-2xl shadow-lg border-2 border-indigo-500 p-6 space-y-4">
         <div class="flex items-center justify-between border-b pb-4">
           <div>
@@ -93,7 +93,6 @@
     <!-- [2] 교사 분석 대시보드 화면 -->
     <section id="teacherView" class="hidden space-y-6">
       
-      <!-- 상단 요약 통계 -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="bg-white p-5 rounded-2xl shadow-sm">
           <div class="text-xs font-semibold text-slate-400">통계 반영 인원 (제외 인원)</div>
@@ -131,14 +130,18 @@
         <div id="questionStatsContainer" class="grid grid-cols-5 sm:grid-cols-10 gap-2"></div>
       </div>
 
-      <!-- 학생별 상세 결과 표 -->
+      <!-- 학생별 제출 현황 표 -->
       <div class="bg-white rounded-2xl shadow-sm overflow-hidden p-6">
         <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
           <div>
             <h3 class="text-base font-bold text-slate-800">학생별 제출 현황</h3>
-            <p class="text-xs text-slate-400 mt-0.5">이름 클릭 시 제출 답안 대조 및 오답 원인 분석 확인 가능</p>
+            <p class="text-xs text-slate-400 mt-0.5">정답 기준을 수정한 경우 [전체 재채점] 버튼을 누르면 즉시 모든 학생의 점수가 재계산됩니다.</p>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- 일괄 재채점 버튼 -->
+            <button onclick="regradeAllSubmissions()" id="btnRegrade" class="px-3 py-1.5 bg-amber-500 text-white rounded-lg text-xs font-bold hover:bg-amber-600 shadow-sm transition flex items-center gap-1">
+              <span>⚡</span> 전체 재채점 (정답 갱신)
+            </button>
             <button onclick="toggleAutoRefresh()" id="btnAutoRefresh" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5 transition">
               <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
               자동 갱신 (5초)
@@ -202,7 +205,6 @@
   </div>
 
   <script>
-    // 기존 Google Apps Script API URL 연동
     const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbx2Aywvlh7K6BAZbVeCWYp-4E6F77Bp3sg_MSzC6EVYfm6Wh4bewDuSulu1IyxBiwrD/exec";
 
     let isTeacherAuthenticated = false;
@@ -214,7 +216,6 @@
     let currentSortColumn = 'studentNum';
     let currentSortOrder = 'asc';
 
-    // 사회 1학기 6개 영역 정의
     const unitDefinitions = [
       { id: 1, name: "1. 남북 분단과 통일 한국", questions: [1, 2, 3, 4] },
       { id: 2, name: "2. 일상생활과 민주주의", questions: [5, 6, 7, 8] },
@@ -224,7 +225,7 @@
       { id: 6, name: "6. 세계의 대륙과 대양, 이웃 나라", questions: [25, 26, 27, 28, 29, 30] }
     ];
 
-    // 사회 30문항 시험 정답 구성
+    // 7번(ㄴ,ㄹ), 10번(2번) 올바른 정답 반영 완료
     const quizConfig = [
       { no: 1, unitId: 1, type: "text", answer: ["분단"] },
       { no: 2, unitId: 1, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["5"] },
@@ -232,16 +233,18 @@
       { no: 4, unitId: 1, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["4"] },
       { no: 5, unitId: 2, type: "multi_select", options: ["1", "2", "3", "4", "5"], answer: ["2,5", "5,2", "2, 5", "5, 2"], note: "2개 선택" },
       { no: 6, unitId: 2, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["4"] },
-      { no: 7, unitId: 2, type: "multi_select", options: ["㉠", "㉡", "㉢", "㉣"], answer: ["㉡,㉣", "㉣,㉡", "㉡, ㉣", "㉣, ㉡", "ㄴ,ㄹ", "ㄹ,ㄴ"], note: "2개 선택" },
+      // 7번: ㄴ, ㄹ (기호 및 자음 모두 인정)
+      { no: 7, unitId: 2, type: "multi_select", options: ["㉠", "㉡", "㉢", "㉣"], answer: ["㉡,㉣", "㉣,㉡", "㉡, ㉣", "㉣, ㉡", "ㄴ,ㄹ", "ㄹ,ㄴ", "ㄴ, ㄹ", "ㄹ, ㄴ"], note: "2개 선택" },
       { no: 8, unitId: 2, type: "text", answer: ["지방자치제", "지방자치제도"] },
       { no: 9, unitId: 3, type: "text", answer: ["한류"] },
+      // 10번: 2번 (보통 선거)
       { no: 10, unitId: 3, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["2"] },
       { no: 11, unitId: 3, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["4"] },
       { no: 12, unitId: 3, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["1"] },
       { no: 13, unitId: 3, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["3"] },
       { no: 14, unitId: 3, type: "select", options: ["정원", "예원", "하늘"], answer: ["하늘"] },
       { no: 15, unitId: 3, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["5"] },
-      { no: 16, unitId: 3, type: "multi_select", options: ["㉠", "㉡", "㉢", "㉣"], answer: ["㉠,㉢", "㉢,㉠", "㉠, ㉢", "㉢, ㉠", "ㄱ,ㄷ", "ㄷ,ㄱ"], note: "2개 선택" },
+      { no: 16, unitId: 3, type: "multi_select", options: ["㉠", "㉡", "㉢", "㉣"], answer: ["㉠,㉢", "㉢,㉠", "㉠, ㉢", "㉢, ㉠", "ㄱ,ㄷ", "ㄷ,ㄱ", "ㄱ, ㄷ", "ㄷ, ㄱ"], note: "2개 선택" },
       { no: 17, unitId: 3, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["5"] },
       { no: 18, unitId: 4, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["4"] },
       { no: 19, unitId: 4, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["5"] },
@@ -270,7 +273,6 @@
               ${q.options.map(opt => `<option value="${opt}">${opt}번</option>`).join('')}
             </select>`;
         } else if (q.type === 'multi_select') {
-          // 복수 선택 (체크박스형)
           inputField = `
             <div class="flex items-center gap-1.5" id="multi_${q.no}">
               ${q.options.map(opt => `
@@ -354,7 +356,6 @@
         else wrongQuestions.push(q.no);
       });
 
-      // 30문항 기준 100점 만점 환산 (문항당 약 3.33점)
       const calculatedScore = Math.round((correctCount / 30) * 100);
 
       const submission = {
@@ -446,6 +447,48 @@
           tbody.innerHTML = `<tr><td colspan="7" class="text-center p-6 text-rose-500 font-bold">데이터를 가져오지 못했습니다.</td></tr>`;
         }
       }
+    }
+
+    // ⚡ [핵심 기능] 이미 제출된 전 학생 데이터 일괄 재채점 함수
+    async function regradeAllSubmissions() {
+      if (globalSubmissions.length === 0) return alert("재채점할 학생 데이터가 없습니다.");
+
+      if (!confirm("현재 설정된 정답을 기준으로 이미 제출된 모든 학생의 답안을 재채점하시겠습니까?\n구글 스프레드시트의 점수도 자동 갱신됩니다.")) {
+        return;
+      }
+
+      const btn = document.getElementById("btnRegrade");
+      btn.disabled = true;
+      btn.textContent = "재채점 중...";
+
+      for (let s of globalSubmissions) {
+        let correctCount = 0;
+        let newWrongList = [];
+
+        quizConfig.forEach(q => {
+          const userVal = (s.answers && s.answers[q.no]) ? s.answers[q.no] : "";
+          const cleanUser = cleanStr(userVal);
+          const isCorrect = q.answer.some(ans => cleanStr(ans) === cleanUser);
+
+          if (isCorrect) {
+            correctCount++;
+          } else {
+            newWrongList.push(q.no);
+          }
+        });
+
+        // 100점 만점 재환산
+        s.score = Math.round((correctCount / 30) * 100);
+        s.wrongList = newWrongList;
+
+        // 스프레드시트에 갱신된 점수 및 오답 정보 동기화 전송
+        await syncToServer(s);
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = `<span>⚡</span> 전체 재채점 (정답 갱신)`;
+      recalculateAndRender();
+      alert("모든 학생의 점수와 오답이 성공적으로 재계산되었습니다!");
     }
 
     function startAutoRefresh() {
@@ -554,14 +597,12 @@
         document.getElementById("statFemaleAvg").textContent = "0점";
       }
 
-      // 문항별 오답수 집계
       const wrongCounts = {};
       quizConfig.forEach(q => wrongCounts[q.no] = 0);
       activeList.forEach(s => {
         s.wrongList.forEach(qNo => wrongCounts[qNo]++);
       });
 
-      // 단원별 취약도 통계
       const unitResults = unitDefinitions.map(unit => {
         let totalInstances = unit.questions.length * activeList.length;
         let totalWrong = 0;
@@ -608,7 +649,6 @@
           </div>`;
       }).join('');
 
-      // 개별 문항 오답률
       document.getElementById("questionStatsContainer").innerHTML = quizConfig.map(q => {
         const wrongRate = activeList.length > 0 ? Math.round((wrongCounts[q.no] / activeList.length) * 100) : 0;
         let badgeColor = "bg-slate-100 text-slate-600";
@@ -622,7 +662,6 @@
           </div>`;
       }).join('');
 
-      // 학생 표 정렬
       globalSubmissions.sort((a, b) => {
         let valA, valB;
         if (currentSortColumn === 'studentNum') {
@@ -659,7 +698,7 @@
             <td class="p-3 font-bold ${isExcluded ? 'text-slate-500' : (s.score >= 80 ? 'text-indigo-600' : 'text-slate-700')}">${s.score}점</td>
             <td class="p-3 text-xs text-rose-600">${s.wrongList.length > 0 ? s.wrongList.join(', ') + '번' : '<span class="text-emerald-600 font-semibold">만점</span>'}</td>
             <td class="p-3 text-center">
-              <button onclick="deleteSubmission(${s.id}, '${s.name}')" class="px-2.5 py-1 text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg transition">
+              <button onclick="deleteSubmission(${s.id}, '${s.name}')" class="px-2.5 py-1 text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg transition" title="이 기록을 영구 삭제합니다.">
                 삭제
               </button>
             </td>
@@ -667,7 +706,6 @@
       }).join('');
     }
 
-    // 사회 문항별 오답 원인 진단
     function diagnoseSocialMistake(q, userAns) {
       if (!userAns || userAns.trim() === "") return { reason: "미기입 (빈칸)", color: "text-slate-400 bg-slate-100" };
       if (q.type === 'multi_select') {
