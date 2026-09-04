@@ -94,23 +94,41 @@
     <!-- [2] 교사 분석 대시보드 화면 -->
     <section id="teacherView" class="hidden space-y-6">
       
-      <!-- 통계 카드 요약 -->
+      <!-- 통계 요약 카드 (미제출자 인원 및 확인 버튼 포함) -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-          <div class="text-xs font-semibold text-slate-400">통계 반영 인원 (제외)</div>
-          <div class="text-2xl font-bold text-slate-900 mt-1" id="statTotalCount">0명</div>
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-400">응시 현황</span>
+            <div class="flex items-center gap-1 text-[11px] text-slate-500">
+              <span>정원:</span>
+              <input type="number" id="classRosterCount" value="25" min="1" max="50" onchange="updateRosterCount()" class="w-10 border rounded px-1 py-0.5 text-center font-bold text-indigo-600" title="학급 전체 인원을 입력하세요." />명
+            </div>
+          </div>
+          <div class="mt-2">
+            <div class="text-2xl font-bold text-slate-900" id="statTotalCount">0명</div>
+            <div class="flex items-center justify-between mt-1">
+              <span class="text-xs font-semibold text-rose-500" id="statUnsubmittedText">미제출 0명</span>
+              <button onclick="openUnsubmittedModal()" class="text-[11px] bg-rose-50 text-rose-600 hover:bg-rose-100 font-bold px-2 py-0.5 rounded transition">
+                명단 보기
+              </button>
+            </div>
+          </div>
         </div>
+
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
           <div class="text-xs font-semibold text-slate-400">학급 전체 평균</div>
-          <div class="text-2xl font-bold text-indigo-600 mt-1" id="statClassAvg">0점</div>
+          <div class="text-2xl font-bold text-indigo-600 mt-2" id="statClassAvg">0점</div>
+          <div class="text-xs text-slate-400 mt-1" id="statExcludedCount">제외 인원: 0명</div>
         </div>
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
           <div class="text-xs font-semibold text-slate-400">남학생 평균</div>
-          <div class="text-2xl font-bold text-blue-600 mt-1" id="statMaleAvg">0점</div>
+          <div class="text-2xl font-bold text-blue-600 mt-2" id="statMaleAvg">0점</div>
+          <div class="text-xs text-slate-400 mt-1" id="statMaleCount">0명 응시</div>
         </div>
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
           <div class="text-xs font-semibold text-slate-400">여학생 평균</div>
-          <div class="text-2xl font-bold text-pink-600 mt-1" id="statFemaleAvg">0점</div>
+          <div class="text-2xl font-bold text-pink-600 mt-2" id="statFemaleAvg">0점</div>
+          <div class="text-xs text-slate-400 mt-1" id="statFemaleCount">0명 응시</div>
         </div>
       </div>
 
@@ -227,6 +245,31 @@
     </div>
   </div>
 
+  <!-- [모달 3] 미제출자 명단 팝업 모달 -->
+  <div id="unsubmittedModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[80vh] flex flex-col overflow-hidden">
+      <div class="p-5 border-b flex justify-between items-center bg-rose-50">
+        <div>
+          <h3 class="text-lg font-bold text-rose-950">📋 아직 제출하지 않은 학생</h3>
+          <p class="text-xs text-rose-600 mt-0.5" id="unsubmittedModalSub">학급 정원 대비 미응시자 번호 목록</p>
+        </div>
+        <button onclick="closeUnsubmittedModal()" class="text-slate-400 hover:text-slate-700 text-2xl font-bold p-1">&times;</button>
+      </div>
+      <div class="p-5 overflow-y-auto space-y-4">
+        <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600 leading-relaxed">
+          설정된 학급 정원(1번부터 <span id="modalRosterDisplay" class="font-bold text-slate-900">25번</span>) 중 아직 제출 기록이 없는 학생의 번호입니다.
+        </div>
+        <div>
+          <div class="text-xs font-bold text-slate-500 mb-2">미제출 번호 (<span id="unsubmittedCountDisplay" class="text-rose-600">0</span>명)</div>
+          <div id="unsubmittedListContainer" class="flex flex-wrap gap-2"></div>
+        </div>
+      </div>
+      <div class="p-4 border-t bg-slate-50 flex justify-end">
+        <button onclick="closeUnsubmittedModal()" class="px-5 py-2 bg-slate-800 text-white rounded-xl text-sm font-semibold hover:bg-slate-900">닫기</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbx2Aywvlh7K6BAZbVeCWYp-4E6F77Bp3sg_MSzC6EVYfm6Wh4bewDuSulu1IyxBiwrD/exec";
 
@@ -238,6 +281,9 @@
 
     let currentSortColumn = 'studentNum';
     let currentSortOrder = 'asc';
+
+    // 기본 학급 정원 (로컬스토리지 저장 지원)
+    let totalClassRoster = parseInt(localStorage.getItem("science_class_roster") || "25", 10);
 
     const unitDefinitions = [
       { id: 1, name: "1. 산과 염기", questions: [1, 2, 3, 4, 5] },
@@ -797,6 +843,10 @@
         tView.classList.remove("hidden");
         btnT.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 text-white transition shadow-sm";
         btnS.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300 transition";
+        
+        // 정원 입력란 초기값 반영
+        document.getElementById("classRosterCount").value = totalClassRoster;
+
         fetchServerData(true);
         if (isAutoRefreshEnabled) startAutoRefresh();
       }
@@ -859,7 +909,8 @@
       autoRefreshInterval = setInterval(() => {
         const modal1 = document.getElementById("detailModal");
         const modal2 = document.getElementById("questionWrongModal");
-        if (modal1.classList.contains("hidden") && modal2.classList.contains("hidden")) {
+        const modal3 = document.getElementById("unsubmittedModal");
+        if (modal1.classList.contains("hidden") && modal2.classList.contains("hidden") && modal3.classList.contains("hidden")) {
           fetchServerData(false);
         }
       }, 5000);
@@ -929,11 +980,67 @@
       });
     }
 
+    // 학급 정원 설정 변경
+    function updateRosterCount() {
+      const inputVal = parseInt(document.getElementById("classRosterCount").value, 10);
+      if (isNaN(inputVal) || inputVal < 1) {
+        alert("올바른 정원 숫자를 입력해주세요.");
+        document.getElementById("classRosterCount").value = totalClassRoster;
+        return;
+      }
+      totalClassRoster = inputVal;
+      localStorage.setItem("science_class_roster", String(totalClassRoster));
+      recalculateAndRender();
+    }
+
+    // 미제출자 목록 계산
+    function getUnsubmittedList() {
+      const submittedNumbers = new Set(
+        globalSubmissions.map(s => parseInt(s.studentNum, 10)).filter(n => !isNaN(n))
+      );
+
+      const unsubmitted = [];
+      for (let i = 1; i <= totalClassRoster; i++) {
+        if (!submittedNumbers.has(i)) {
+          unsubmitted.push(i);
+        }
+      }
+      return unsubmitted;
+    }
+
+    // 미제출자 모달 열기
+    function openUnsubmittedModal() {
+      const unsubmitted = getUnsubmittedList();
+      document.getElementById("modalRosterDisplay").textContent = `${totalClassRoster}번`;
+      document.getElementById("unsubmittedCountDisplay").textContent = unsubmitted.length;
+
+      const container = document.getElementById("unsubmittedListContainer");
+      if (unsubmitted.length === 0) {
+        container.innerHTML = `
+          <div class="w-full p-4 bg-emerald-50 text-emerald-800 rounded-xl text-center font-bold text-xs">
+            🎉 학급 정원 ${totalClassRoster}명 전원이 답안을 제출했습니다!
+          </div>`;
+      } else {
+        container.innerHTML = unsubmitted.map(num => `
+          <span class="px-3 py-1.5 bg-rose-50 border border-rose-200 text-rose-700 font-extrabold rounded-xl text-xs shadow-sm">
+            ${num}번
+          </span>
+        `).join('');
+      }
+
+      document.getElementById("unsubmittedModal").classList.remove("hidden");
+    }
+
+    function closeUnsubmittedModal() {
+      document.getElementById("unsubmittedModal").classList.add("hidden");
+    }
+
     function recalculateAndRender() {
       const tbody = document.getElementById("studentTableBody");
 
       if (globalSubmissions.length === 0) {
         document.getElementById("statTotalCount").textContent = "0명";
+        document.getElementById("statUnsubmittedText").textContent = `미제출 ${totalClassRoster}명`;
         document.getElementById("statClassAvg").textContent = "0점";
         document.getElementById("statMaleAvg").textContent = "0점";
         document.getElementById("statFemaleAvg").textContent = "0점";
@@ -944,8 +1051,11 @@
 
       const activeList = globalSubmissions.filter(s => !excludedStudentIds.has(s.id));
       const excludedCount = excludedStudentIds.size;
+      const unsubmittedCount = Math.max(0, totalClassRoster - globalSubmissions.length);
 
-      document.getElementById("statTotalCount").textContent = `${activeList.length}명 ${excludedCount > 0 ? `(${excludedCount}명 제외)` : ''}`;
+      document.getElementById("statTotalCount").textContent = `${globalSubmissions.length}명 제출`;
+      document.getElementById("statUnsubmittedText").textContent = `미제출 ${unsubmittedCount}명`;
+      document.getElementById("statExcludedCount").textContent = `통계 제외: ${excludedCount}명`;
 
       if (activeList.length > 0) {
         const totalScore = activeList.reduce((acc, cur) => acc + cur.score, 0);
@@ -955,6 +1065,8 @@
         const females = activeList.filter(s => s.gender === "여");
         document.getElementById("statMaleAvg").textContent = `${males.length ? (males.reduce((acc, c) => acc + c.score, 0) / males.length).toFixed(1) : 0}점`;
         document.getElementById("statFemaleAvg").textContent = `${females.length ? (females.reduce((acc, c) => acc + c.score, 0) / females.length).toFixed(1) : 0}점`;
+        document.getElementById("statMaleCount").textContent = `${males.length}명 응시`;
+        document.getElementById("statFemaleCount").textContent = `${females.length}명 응시`;
       } else {
         document.getElementById("statClassAvg").textContent = "0점";
         document.getElementById("statMaleAvg").textContent = "0점";
@@ -1015,7 +1127,7 @@
           </div>`;
       }).join('');
 
-      // 개별 문항 카드 클릭 시 오답자 모달 호출 기능 연동
+      // 개별 문항 오답률 렌더링
       document.getElementById("questionStatsContainer").innerHTML = quizConfig.map(q => {
         const wrongRate = activeList.length > 0 ? Math.round((wrongCounts[q.no] / activeList.length) * 100) : 0;
         let badgeColor = "bg-slate-100 text-slate-600";
@@ -1074,7 +1186,6 @@
       }).join('');
     }
 
-    // 문항 클릭 시 오답자 명단 모달 표시 함수
     function openQuestionWrongModal(qNo) {
       const q = quizConfig.find(item => item.no === qNo);
       if (!q) return;
