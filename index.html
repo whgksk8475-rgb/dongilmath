@@ -3,52 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>6학년 1학기 사회 총괄평가 자동 채점기</title>
+  <title>6학년 1학기 과학 총괄 단원평가</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     input::-webkit-outer-spin-button,
     input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans min-h-screen p-4 md:p-8">
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen p-3 md:p-8">
 
-  <div class="max-w-4xl mx-auto space-y-8">
+  <div class="max-w-4xl mx-auto space-y-6">
     
+    <!-- 상단 헤더 -->
     <header class="bg-white rounded-2xl shadow-sm p-6 flex flex-wrap justify-between items-center gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-slate-900">사회 6-1 총괄평가 (1회) 자동 채점</h1>
-        <p class="text-sm text-slate-500 mt-1">시험지를 보고 문항별 번호나 단답형 정답을 입력하세요.</p>
+        <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full uppercase tracking-wider">CBT Online Test</span>
+        <h1 class="text-2xl font-extrabold text-slate-900 mt-1">6학년 과학 총괄 단원평가</h1>
+        <p class="text-xs text-slate-500 mt-0.5">총 30문항 · 5지선다 객관식 · 화면에서 문제를 읽고 정답을 선택하세요.</p>
       </div>
       <div class="flex gap-2">
-        <button onclick="switchView('student')" id="btnStudent" class="px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 text-white transition">학생 답안 입력</button>
+        <button onclick="switchView('student')" id="btnStudent" class="px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 text-white transition shadow-sm">문제 풀기</button>
         <button onclick="switchView('teacher')" id="btnTeacher" class="px-4 py-2 rounded-xl text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300 transition">🔒 교사 대시보드</button>
       </div>
     </header>
 
-    <!-- [1] 학생 화면 -->
+    <!-- [1] 학생 문제 풀이 화면 -->
     <main id="studentView" class="space-y-6">
-      <section class="bg-white rounded-2xl shadow-sm p-6">
-        <h2 class="text-lg font-bold mb-4 text-slate-800">학생 정보 입력</h2>
-        <div class="grid grid-cols-2 sm:grid-cols-5 gap-4">
+      
+      <!-- 인적사항 입력 카드 -->
+      <section class="bg-white rounded-2xl shadow-sm p-6 border border-slate-100">
+        <h2 class="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
+          <span class="w-2 h-4 bg-indigo-600 rounded-full"></span> 응시자 정보 입력
+        </h2>
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
           <div>
             <label class="text-xs font-semibold text-slate-500">학년</label>
-            <input type="number" id="grade" value="6" class="w-full mt-1 p-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
+            <input type="number" id="grade" value="6" class="w-full mt-1 p-2.5 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-center font-bold" />
           </div>
           <div>
             <label class="text-xs font-semibold text-slate-500">반</label>
-            <input type="number" id="classNum" placeholder="예: 1" class="w-full mt-1 p-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
+            <input type="number" id="classNum" placeholder="예: 1" class="w-full mt-1 p-2.5 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-center font-bold" />
           </div>
           <div>
             <label class="text-xs font-semibold text-slate-500">번호</label>
-            <input type="number" id="studentNum" placeholder="예: 15" class="w-full mt-1 p-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
+            <input type="number" id="studentNum" placeholder="예: 15" class="w-full mt-1 p-2.5 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-center font-bold" />
           </div>
           <div>
             <label class="text-xs font-semibold text-slate-500">이름</label>
-            <input type="text" id="name" placeholder="홍길동" class="w-full mt-1 p-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" />
+            <input type="text" id="name" placeholder="홍길동" class="w-full mt-1 p-2.5 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-center font-bold" />
           </div>
           <div>
             <label class="text-xs font-semibold text-slate-500">성별</label>
-            <select id="gender" class="w-full mt-1 p-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
+            <select id="gender" class="w-full mt-1 p-2.5 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none bg-white font-bold">
               <option value="남">남학생</option>
               <option value="여">여학생</option>
             </select>
@@ -56,36 +62,33 @@
         </div>
       </section>
 
-      <section class="bg-white rounded-2xl shadow-sm p-6">
-        <div class="flex justify-between items-center mb-6">
-          <h2 class="text-lg font-bold text-slate-800">문항별 정답 입력 (총 30문항, 100점 만점 환산)</h2>
-          <span class="text-xs bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full font-medium">단답형은 띄어쓰기 무관 채점</span>
-        </div>
-
-        <div id="questionsContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
-
-        <div class="mt-8 text-center">
-          <button id="btnSubmit" onclick="submitAnswers()" class="w-full md:w-1/2 py-3 bg-indigo-600 text-white font-bold rounded-xl shadow-md hover:bg-indigo-700 transition">
-            채점하기 및 제출
-          </button>
-        </div>
+      <!-- 문제 출력 컨테이너 (온라인 시험지) -->
+      <section class="space-y-4" id="questionsContainer">
+        <!-- JS 렌더링 -->
       </section>
 
-      <!-- 학생 결과 카드 -->
-      <section id="resultCard" class="hidden bg-white rounded-2xl shadow-lg border-2 border-indigo-500 p-6 space-y-4">
+      <!-- 제출 버튼 -->
+      <div class="pt-4 pb-8 text-center">
+        <button id="btnSubmit" onclick="submitAnswers()" class="w-full md:w-2/3 py-4 bg-indigo-600 text-white text-lg font-bold rounded-2xl shadow-lg hover:bg-indigo-700 transition transform active:scale-95">
+          답안 최종 제출하기
+        </button>
+      </div>
+
+      <!-- 제출 후 결과 모달/카드 (정답 비공개) -->
+      <section id="resultCard" class="hidden bg-white rounded-2xl shadow-xl border-2 border-indigo-500 p-6 space-y-4">
         <div class="flex items-center justify-between border-b pb-4">
           <div>
-            <h3 class="text-xl font-bold text-slate-900" id="resultGreeting">채점 결과</h3>
-            <p class="text-sm text-slate-500">틀린 문제를 시험지에서 다시 확인해 보세요.</p>
+            <h3 class="text-xl font-bold text-slate-900" id="resultGreeting">채점 완료</h3>
+            <p class="text-xs text-slate-500 mt-1">답안이 선생님께 전송되었습니다. 틀린 문항을 복습해 보세요.</p>
           </div>
           <div class="text-right">
-            <span class="text-3xl font-extrabold text-indigo-600" id="resultScore">0</span>
+            <span class="text-3xl font-black text-indigo-600" id="resultScore">0</span>
             <span class="text-slate-400 font-bold">/ 100점</span>
           </div>
         </div>
         <div>
-          <h4 class="font-bold text-slate-700 mb-2">오답 문항 번호</h4>
-          <div id="wrongItemsContainer" class="text-sm"></div>
+          <h4 class="font-bold text-slate-700 mb-2 text-sm">내가 틀린 문항 번호</h4>
+          <div id="wrongItemsContainer"></div>
         </div>
       </section>
     </main>
@@ -93,54 +96,54 @@
     <!-- [2] 교사 분석 대시보드 화면 -->
     <section id="teacherView" class="hidden space-y-6">
       
+      <!-- 통계 카드 요약 -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div class="bg-white p-5 rounded-2xl shadow-sm">
-          <div class="text-xs font-semibold text-slate-400">통계 반영 인원 (제외 인원)</div>
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+          <div class="text-xs font-semibold text-slate-400">통계 반영 인원 (제외)</div>
           <div class="text-2xl font-bold text-slate-900 mt-1" id="statTotalCount">0명</div>
         </div>
-        <div class="bg-white p-5 rounded-2xl shadow-sm">
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
           <div class="text-xs font-semibold text-slate-400">학급 전체 평균</div>
           <div class="text-2xl font-bold text-indigo-600 mt-1" id="statClassAvg">0점</div>
         </div>
-        <div class="bg-white p-5 rounded-2xl shadow-sm">
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
           <div class="text-xs font-semibold text-slate-400">남학생 평균</div>
           <div class="text-2xl font-bold text-blue-600 mt-1" id="statMaleAvg">0점</div>
         </div>
-        <div class="bg-white p-5 rounded-2xl shadow-sm">
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
           <div class="text-xs font-semibold text-slate-400">여학생 평균</div>
           <div class="text-2xl font-bold text-pink-600 mt-1" id="statFemaleAvg">0점</div>
         </div>
       </div>
 
       <!-- 단원별 취약도 분석 카드 -->
-      <div class="bg-white p-6 rounded-2xl shadow-sm space-y-4">
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4">
         <div class="flex items-center justify-between">
           <div>
-            <h3 class="text-base font-bold text-slate-800">단원별 취약도 분석 (오답률 높은 순)</h3>
-            <p class="text-xs text-slate-400 mt-0.5">학생들이 가장 어려워하는 단원부터 순서대로 정렬됩니다.</p>
+            <h3 class="text-base font-bold text-slate-800">과학 6개 영역별 취약도 분석 (오답률 순)</h3>
+            <p class="text-xs text-slate-400 mt-0.5">학생들이 가장 어려워하는 단원부터 순서대로 자동 정렬됩니다.</p>
           </div>
-          <span class="text-xs bg-indigo-50 text-indigo-700 font-semibold px-2.5 py-1 rounded-full">사회 6개 영역</span>
+          <span class="text-xs bg-indigo-50 text-indigo-700 font-bold px-2.5 py-1 rounded-full">단원별 평균 오답률</span>
         </div>
         <div id="unitStatsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3.5"></div>
       </div>
 
-      <!-- 문항별 오답률 -->
-      <div class="bg-white p-6 rounded-2xl shadow-sm">
+      <!-- 문항별 오답률 분석 -->
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
         <h3 class="text-base font-bold text-slate-800 mb-4">문항별 오답률 분석 (통계 반영 기준)</h3>
         <div id="questionStatsContainer" class="grid grid-cols-5 sm:grid-cols-10 gap-2"></div>
       </div>
 
       <!-- 학생별 제출 현황 표 -->
-      <div class="bg-white rounded-2xl shadow-sm overflow-hidden p-6">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden p-6">
         <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
           <div>
             <h3 class="text-base font-bold text-slate-800">학생별 제출 현황</h3>
-            <p class="text-xs text-slate-400 mt-0.5">정답 기준을 수정한 경우 [전체 재채점] 버튼을 누르면 즉시 모든 학생의 점수가 재계산됩니다.</p>
+            <p class="text-xs text-slate-400 mt-0.5">이름을 클릭하면 각 문항별 학생 선택 번호 및 문항별 해설을 볼 수 있습니다.</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
-            <!-- 일괄 재채점 버튼 -->
             <button onclick="regradeAllSubmissions()" id="btnRegrade" class="px-3 py-1.5 bg-amber-500 text-white rounded-lg text-xs font-bold hover:bg-amber-600 shadow-sm transition flex items-center gap-1">
-              <span>⚡</span> 전체 재채점 (정답 갱신)
+              <span>⚡</span> 전체 재채점
             </button>
             <button onclick="toggleAutoRefresh()" id="btnAutoRefresh" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5 transition">
               <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -187,13 +190,13 @@
 
   </div>
 
-  <!-- 교사용 모달 -->
+  <!-- 학생 상세 답안 & 해설 분석 모달 -->
   <div id="detailModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden">
       <div class="p-5 border-b flex justify-between items-center bg-slate-50">
         <div>
           <h3 class="text-lg font-bold text-slate-900" id="modalStudentTitle">학생 개별 답안 분석</h3>
-          <p class="text-xs text-slate-500 mt-0.5" id="modalStudentSub">제출 답안 및 오답 유형 진단</p>
+          <p class="text-xs text-slate-500 mt-0.5" id="modalStudentSub">제출 답안, 정답 및 문항별 해설</p>
         </div>
         <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-700 text-2xl font-bold p-1">&times;</button>
       </div>
@@ -205,6 +208,7 @@
   </div>
 
   <script>
+    // 구글 스프레드시트 Web App API URL
     const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbx2Aywvlh7K6BAZbVeCWYp-4E6F77Bp3sg_MSzC6EVYfm6Wh4bewDuSulu1IyxBiwrD/exec";
 
     let isTeacherAuthenticated = false;
@@ -216,94 +220,439 @@
     let currentSortColumn = 'studentNum';
     let currentSortOrder = 'asc';
 
+    // 과학 6-1 6개 단원 정의
     const unitDefinitions = [
-      { id: 1, name: "1. 남북 분단과 통일 한국", questions: [1, 2, 3, 4] },
-      { id: 2, name: "2. 일상생활과 민주주의", questions: [5, 6, 7, 8] },
-      { id: 3, name: "3. 민주 정치의 원리와 국가 기관", questions: [9, 10, 11, 12, 13, 14, 15, 16, 17] },
-      { id: 4, name: "4. 지구본과 세계 지도", questions: [18, 19, 20, 21] },
-      { id: 5, name: "5. 디지털 공간 영상과 위치", questions: [22, 23, 24] },
-      { id: 6, name: "6. 세계의 대륙과 대양, 이웃 나라", questions: [25, 26, 27, 28, 29, 30] }
+      { id: 1, name: "1. 산과 염기", questions: [1, 2, 3, 4, 5] },
+      { id: 2, name: "2. 물체의 운동", questions: [6, 7, 8, 9, 10] },
+      { id: 3, name: "3. 식물의 구조와 기능", questions: [11, 12, 13, 14, 15, 16] },
+      { id: 4, name: "4. 지구의 운동", questions: [17, 18, 19, 20, 21] },
+      { id: 5, name: "5. 여러 가지 기체", questions: [22, 23, 24, 25] },
+      { id: 6, name: "6. 감염병 / 기후변화와 생활", questions: [26, 27, 28, 29, 30] }
     ];
 
-    // 7번(ㄴ,ㄹ), 10번(2번) 올바른 정답 반영 완료
+    // 과학 30문항 데이터베이스 (문제, 제시문, 보기, 정답, 해설)[cite: 3]
     const quizConfig = [
-      { no: 1, unitId: 1, type: "text", answer: ["분단"] },
-      { no: 2, unitId: 1, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["5"] },
-      { no: 3, unitId: 1, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["1"] },
-      { no: 4, unitId: 1, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["4"] },
-      { no: 5, unitId: 2, type: "multi_select", options: ["1", "2", "3", "4", "5"], answer: ["2,5", "5,2", "2, 5", "5, 2"], note: "2개 선택" },
-      { no: 6, unitId: 2, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["4"] },
-      // 7번: ㄴ, ㄹ (기호 및 자음 모두 인정)
-      { no: 7, unitId: 2, type: "multi_select", options: ["㉠", "㉡", "㉢", "㉣"], answer: ["㉡,㉣", "㉣,㉡", "㉡, ㉣", "㉣, ㉡", "ㄴ,ㄹ", "ㄹ,ㄴ", "ㄴ, ㄹ", "ㄹ, ㄴ"], note: "2개 선택" },
-      { no: 8, unitId: 2, type: "text", answer: ["지방자치제", "지방자치제도"] },
-      { no: 9, unitId: 3, type: "text", answer: ["한류"] },
-      // 10번: 2번 (보통 선거)
-      { no: 10, unitId: 3, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["2"] },
-      { no: 11, unitId: 3, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["4"] },
-      { no: 12, unitId: 3, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["1"] },
-      { no: 13, unitId: 3, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["3"] },
-      { no: 14, unitId: 3, type: "select", options: ["정원", "예원", "하늘"], answer: ["하늘"] },
-      { no: 15, unitId: 3, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["5"] },
-      { no: 16, unitId: 3, type: "multi_select", options: ["㉠", "㉡", "㉢", "㉣"], answer: ["㉠,㉢", "㉢,㉠", "㉠, ㉢", "㉢, ㉠", "ㄱ,ㄷ", "ㄷ,ㄱ", "ㄱ, ㄷ", "ㄷ, ㄱ"], note: "2개 선택" },
-      { no: 17, unitId: 3, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["5"] },
-      { no: 18, unitId: 4, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["4"] },
-      { no: 19, unitId: 4, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["5"] },
-      { no: 20, unitId: 4, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["4"] },
-      { no: 21, unitId: 4, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["5"] },
-      { no: 22, unitId: 5, type: "select", options: ["㉠", "㉡", "㉢", "㉣"], answer: ["㉢", "ㄷ"] },
-      { no: 23, unitId: 5, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["1"] },
-      { no: 24, unitId: 5, type: "text", answer: ["디지털공간영상정보", "디지털 공간 영상 정보", "디지털공간 영상정보"] },
-      { no: 25, unitId: 6, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["5"] },
-      { no: 26, unitId: 6, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["4"] },
-      { no: 27, unitId: 6, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["3"] },
-      { no: 28, unitId: 6, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["5"] },
-      { no: 29, unitId: 6, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["3"] },
-      { no: 30, unitId: 6, type: "select", options: ["1", "2", "3", "4", "5"], answer: ["4"] }
+      {
+        no: 1, unitId: 1, answer: "1",
+        question: "다음은 여러 가지 용액을 어떤 분류 기준에 따라 나눈 것입니다. 분류 기준으로 가장 알맞은 것은?",
+        box: "[대상 용액] 탄산수, 석회수, 묽은 염산, 빨랫비누 물<br>• 그렇다: 석회수, 빨랫비누 물<br>• 그렇지 않다: 탄산수, 묽은 염산",
+        options: [
+          "붉은색 리트머스 종이의 색깔이 푸른색으로 변하는가?",
+          "푸른색 리트머스 종이의 색깔이 붉은색으로 변하는가?",
+          "용액이 투명한가?",
+          "용액에서 냄새가 나는가?",
+          "용액에 거품이 생기는가?"
+        ],
+        explanation: "석회수와 빨랫비누 물은 염기성 용액으로 붉은색 리트머스 종이를 푸른색으로 변화시킵니다."
+      },
+      {
+        no: 2, unitId: 1, answer: "2",
+        question: "다음 용액에 페놀프탈레인 용액을 떨어뜨렸을 때, 붉은색으로 변하는 용액끼리 옳게 짝지은 것은?",
+        box: "탄산수, 레몬즙, 석회수, 빨랫비누 물, 묽은 염산, 묽은 수산화 나트륨 용액",
+        options: [
+          "탄산수, 레몬즙, 묽은 염산",
+          "석회수, 빨랫비누 물, 묽은 수산화 나트륨 용액",
+          "탄산수, 석회수, 묽은 염산",
+          "레몬즙, 빨랫비누 물, 묽은 수산화 나트륨 용액",
+          "여섯 가지 용액 모두"
+        ],
+        explanation: "페놀프탈레인 용액은 염기성 용액에서만 붉은색으로 변합니다 (석회수, 빨랫비누 물, 묽은 수산화 나트륨 용액)."
+      },
+      {
+        no: 3, unitId: 1, answer: "4",
+        question: "대리암 조각과 두부를 각각 묽은 염산과 묽은 수산화 나트륨 용액에 넣고 관찰한 결과입니다. ㉠~㉣ 중 잘못된 것은?",
+        box: "[묽은 염산] 대리암 조각 → ㉠ 녹으면서 기포가 발생한다.<br>[묽은 수산화 나트륨 용액] 대리암 조각 → ㉡ 아무 변화가 없다.<br>[묽은 염산] 두부 → ㉢ 아무 변화가 없다.<br>[묽은 수산화 나트륨 용액] 두부 → ㉣ 기포가 발생하며 두부가 부풀어 오른다.",
+        options: ["㉠", "㉡", "㉢", "㉣", "잘못된 것이 없다."],
+        explanation: "염기성 용액은 단백질을 녹여 두부가 흐물흐물해지며 녹지만 기포가 발생하지는 않습니다."
+      },
+      {
+        no: 4, unitId: 1, answer: "5",
+        question: "산성 용액과 염기성 용액의 성질 및 이용에 대한 설명으로 옳지 않은 것은?",
+        box: null,
+        options: [
+          "염기성 용액인 얼룩 제거제는 단백질을 녹이므로 땀이나 우유 얼룩을 지울 수 있다.",
+          "생선의 비린내는 염기성 물질이므로 산성 용액인 식초로 제거할 수 있다.",
+          "붉은 양배추 지시약은 산성 용액에서 붉은색 계열의 색깔로 변한다.",
+          "페놀프탈레인 용액을 넣은 묽은 수산화 나트륨 용액에 묽은 염산을 계속 넣으면 붉은색에서 무색으로 변한다.",
+          "묽은 수산화 나트륨 용액에 묽은 염산을 계속 넣으면 용액의 염기성이 점점 강해진다."
+        ],
+        explanation: "염기성 용액에 산성 용액을 넣으면 염기성이 점점 약해지다가 산성으로 변합니다."
+      },
+      {
+        no: 5, unitId: 1, answer: "3",
+        question: "다음 피해 사례에 해당하는 산성화의 종류와 그 원인을 옳게 짝지은 것은?",
+        box: "이로운 작은 생물이 활동을 잘하지 못하게 되면 부정적인 영향을 주는 세균 등이 증가한다. 그 결과 식물은 병에 걸리기 쉽고 잘 시든다.",
+        options: [
+          "산성비 — 화산 활동으로 생긴 화산재",
+          "해양 산성화 — 바닷물의 증발량 증가",
+          "토양 산성화 — 과도한 화학 비료와 농약 사용, 대기 오염 물질 배출",
+          "토양 산성화 — 농경지에 물을 지나치게 많이 주는 것",
+          "해양 산성화 — 나무를 많이 심어 산소가 늘어난 것"
+        ],
+        explanation: "토양 산성화에 대한 설명이며, 과도한 비료, 농약 및 오염 물질 배출이 주원인입니다."
+      },
+      {
+        no: 6, unitId: 2, answer: "2",
+        question: "운동하는 물체의 공통된 특징으로 옳은 것은?",
+        box: "수영하는 사람, 움직이는 케이블카, 달리는 자동차, 달리는 기차",
+        options: [
+          "시간이 지나도 위치가 변하지 않는다.",
+          "시간이 지남에 따라 위치가 변한다.",
+          "시간이 지남에 따라 무게가 변한다.",
+          "시간이 지남에 따라 크기가 변한다.",
+          "항상 빠르기가 일정하다."
+        ],
+        explanation: "운동하는 물체는 시간이 지남에 따라 위치가 변합니다."
+      },
+      {
+        no: 7, unitId: 2, answer: "3",
+        question: "물체의 운동을 나타낼 때 반드시 함께 나타내야 하는 것은?",
+        box: "(예) 자전거를 탄 사람은 5초 동안 동쪽으로 5 m를 이동했다.",
+        options: [
+          "물체의 무게와 크기",
+          "물체의 색깔과 모양",
+          "걸린 시간과 이동 거리",
+          "물체의 온도와 부피",
+          "물체의 이동 거리와 무게"
+        ],
+        explanation: "물체의 운동은 걸린 시간과 이동 거리(방향 포함)로 나타냅니다."
+      },
+      {
+        no: 8, unitId: 2, answer: "2",
+        question: "10초 동안 장난감 자동차가 이동한 거리입니다. 가장 빠른 자동차와 그 까닭으로 옳은 것은?",
+        box: "㉠ 100 cm &nbsp;&nbsp;&nbsp; ㉡ 150 cm &nbsp;&nbsp;&nbsp; ㉢ 120 cm",
+        options: [
+          "㉠ — 같은 시간 동안 이동한 거리가 가장 짧기 때문이다.",
+          "㉡ — 같은 시간 동안 이동한 거리가 가장 길기 때문이다.",
+          "㉢ — 이동하는 데 걸린 시간이 가장 짧기 때문이다.",
+          "㉡ — 이동하는 데 걸린 시간이 가장 길기 때문이다.",
+          "세 자동차의 빠르기는 모두 같다."
+        ],
+        explanation: "걸린 시간이 같을 때는 이동한 거리가 가장 긴 물체(㉡)가 가장 빠릅니다."
+      },
+      {
+        no: 9, unitId: 2, answer: "2",
+        question: "2시간 동안 140 km를 이동한 배의 속력으로 옳은 것은?",
+        box: null,
+        options: ["35 km/h", "70 km/h", "140 km/h", "280 km/h", "2 km/h"],
+        explanation: "속력 = 이동 거리 ÷ 걸린 시간 = 140 km ÷ 2시간 = 70 km/h"
+      },
+      {
+        no: 10, unitId: 2, answer: "4",
+        question: "여러 동물의 이동 거리와 걸린 시간입니다. 빠른 것부터 순서대로 옳게 나열한 것은?",
+        box: "토끼 80 m / 5초 &nbsp;&nbsp;&nbsp;&nbsp; 호랑이 180 m / 6초<br>치타 320 m / 8초 &nbsp;&nbsp;&nbsp;&nbsp; 코끼리 200 m / 10초",
+        options: [
+          "치타 — 코끼리 — 호랑이 — 토끼",
+          "코끼리 — 치타 — 호랑이 — 토끼",
+          "치타 — 호랑이 — 토끼 — 코끼리",
+          "치타 — 호랑이 — 코끼리 — 토끼",
+          "토끼 — 코끼리 — 호랑이 — 치타"
+        ],
+        explanation: "초속으로 환산하면 치타(40m/s) > 호랑이(30m/s) > 코끼리(20m/s) > 토끼(16m/s) 순입니다."
+      },
+      {
+        no: 11, unitId: 3, answer: "5",
+        question: "양파 표피세포를 광학 현미경으로 관찰한 결과를 통해 알 수 있는 식물 세포의 특징으로 옳지 않은 것은?",
+        box: null,
+        options: [
+          "세포 안에 둥근 모양의 핵이 있다.",
+          "세포막의 바깥쪽에 세포벽이 있다.",
+          "세포 하나하나가 각진 모양이다.",
+          "각 세포들이 서로 붙어 있다.",
+          "세포벽이 없어 세포의 모양이 일정하지 않다."
+        ],
+        explanation: "식물 세포는 단단한 세포벽이 있어 규칙적이고 각진 모양을 유지합니다."
+      },
+      {
+        no: 12, unitId: 3, answer: "5",
+        question: "뿌리의 구조와 기능에 대한 설명으로 옳지 않은 것은?",
+        box: null,
+        options: [
+          "대부분 굵은 뿌리, 가는 뿌리, 뿌리털로 이루어져 있다.",
+          "땅속의 물을 흡수한다.",
+          "식물이 쓰러지지 않도록 지지한다.",
+          "무, 고구마처럼 뿌리에 양분을 저장하기도 한다.",
+          "뿌리에서 광합성을 하여 양분을 만든다."
+        ],
+        explanation: "광합성을 통해 스스로 양분을 만드는 곳은 뿌리가 아니라 주로 '잎'입니다."
+      },
+      {
+        no: 13, unitId: 3, answer: "1",
+        question: "붉은 색소 물에 넣어 둔 백합 줄기를 가로로 잘랐을 때의 단면 모습과 그 까닭으로 옳은 것은?",
+        box: null,
+        options: [
+          "붉은색 점이 여러 개 보인다 — 붉은 색소 물이 줄기를 통해 이동했기 때문이다.",
+          "단면 전체가 고르게 붉다 — 줄기가 물을 모두 저장했기 때문이다.",
+          "아무 변화가 없다 — 물은 잎으로만 이동하기 때문이다.",
+          "붉은색 점이 여러 개 보인다 — 줄기에서 광합성이 일어났기 때문이다.",
+          "가장자리만 붉다 — 줄기가 물을 밖으로 내보냈기 때문이다."
+        ],
+        explanation: "물이 이동하는 통로(물관)를 통해 붉은 색소 물이 올라가므로 붉은색 점들이 관찰됩니다."
+      },
+      {
+        no: 14, unitId: 3, answer: "4",
+        question: "광합성 실험 결과입니다. 이와 같은 결과가 나온 까닭으로 옳은 것은?",
+        box: "고추 모종의 잎 1개에만 알루미늄 포일을 씌우고 하루 동안 햇빛에 둔 뒤, 아이오딘-아이오딘화 칼륨 용액을 떨어뜨렸다.<br>• 알루미늄 포일을 씌운 잎: 용액의 색깔이 변하지 않는다.<br>• 알루미늄 포일을 씌우지 않은 잎: 용액의 색깔이 청람색으로 변한다.",
+        options: [
+          "알루미늄 포일을 씌운 잎에서만 광합성이 일어났기 때문이다.",
+          "아이오딘-아이오딘화 칼륨 용액이 단백질과 반응했기 때문이다.",
+          "빛을 받지 못한 잎에서 증산 작용이 활발했기 때문이다.",
+          "빛을 받은 잎에서만 광합성이 일어나 녹말이 만들어졌기 때문이다.",
+          "잎이 뿌리에서 올라온 물을 모두 흡수했기 때문이다."
+        ],
+        explanation: "빛을 받은 잎에서 광합성이 일어나 녹말이 생성되었고, 녹말이 아이오딘 용액과 만나 청람색으로 변했습니다."
+      },
+      {
+        no: 15, unitId: 3, answer: "3",
+        question: "고추 모종의 잎을 투명 지퍼 백에 넣고 입구를 닫아 햇빛이 잘 드는 곳에 1~2일 두었습니다. 지퍼 백 안의 변화와 그 까닭으로 옳은 것은?",
+        box: null,
+        options: [
+          "물방울이 맺히고 뿌옇게 변한다 — 광합성으로 잎에서 녹말이 만들어졌기 때문이다.",
+          "아무 변화가 없다 — 잎은 물을 밖으로 내보내지 않기 때문이다.",
+          "물방울이 맺히고 뿌옇게 변한다 — 증산 작용으로 잎에 도달한 물이 잎 밖으로 빠져나가기 때문이다.",
+          "지퍼 백 안이 건조해진다 — 뿌리가 물을 모두 흡수했기 때문이다.",
+          "지퍼 백 안이 붉게 변한다 — 색소 물이 잎까지 이동했기 때문이다."
+        ],
+        explanation: "잎의 기공을 통해 물이 수증기 상태로 빠져나가는 증산 작용 때문에 비닐에 물방울이 맺힙니다."
+      },
+      {
+        no: 16, unitId: 3, answer: "1",
+        question: "꽃의 각 부분과 그 기능을 옳게 짝지은 것은?",
+        box: null,
+        options: [
+          "암술 — 꽃가루받이가 이루어지고 씨가 만들어진다.",
+          "수술 — 꽃의 일부분을 보호한다.",
+          "꽃잎 — 꽃가루가 만들어진다.",
+          "꽃받침 — 씨가 만들어진다.",
+          "수술 — 꽃잎을 받쳐 보호한다."
+        ],
+        explanation: "암술은 꽃가루받이가 이루어져 씨가 되는 밑씨를 품고 있는 곳입니다."
+      },
+      {
+        no: 17, unitId: 4, answer: "2",
+        question: "하루 동안 태양과 별의 위치 변화에 대한 설명으로 옳은 것은?",
+        box: null,
+        options: [
+          "태양은 서쪽 하늘에서 동쪽 하늘로 위치가 달라진다.",
+          "태양은 동쪽 하늘에서 남쪽 하늘을 지나 서쪽 하늘로 위치가 달라진다.",
+          "별은 밤새 같은 위치에 머물러 있다.",
+          "태양과 별은 서로 반대 방향으로 움직인다.",
+          "별은 북쪽 하늘에서 남쪽 하늘로만 움직인다."
+        ],
+        explanation: "지구 자전(서→동)으로 인해 태양과 별은 모두 동쪽에서 남쪽을 거쳐 서쪽으로 이동하는 것처럼 보입니다."
+      },
+      {
+        no: 18, unitId: 4, answer: "4",
+        question: "지구본에 관측자 인형을 붙이고 전등을 비추며 지구본을 회전시켰습니다. 이 실험으로 알 수 있는 낮과 밤이 생기는 까닭으로 옳은 것은?",
+        box: null,
+        options: [
+          "지구가 공전하면서 태양과의 거리가 달라지기 때문이다.",
+          "태양이 지구 주위를 하루에 한 바퀴씩 돌기 때문이다.",
+          "달이 태양 빛을 가리기 때문이다.",
+          "지구가 자전하면서 태양 빛이 비치는 곳은 낮, 비치지 않는 곳은 밤이 되기 때문이다.",
+          "계절에 따라 지구의 위치가 달라지기 때문이다."
+        ],
+        explanation: "지구가 하루에 한 바퀴씩 자전하므로 빛을 받는 쪽은 낮, 반대쪽은 밤이 됩니다."
+      },
+      {
+        no: 19, unitId: 4, answer: "4",
+        question: "전등을 화면 가운데에 두고 학생이 회전하며 동영상을 촬영했습니다. 이 실험 결과를 지구의 운동과 관련지어 설명한 것으로 옳은 것은?",
+        box: "학생이 서쪽에서 동쪽으로 회전하면, 동영상 속 전등은 동쪽에서 서쪽으로 움직이는 것처럼 보인다.",
+        options: [
+          "지구가 동쪽에서 서쪽으로 자전하기 때문에 태양이 동쪽에서 서쪽으로 움직이는 것처럼 보인다.",
+          "태양이 실제로 서쪽에서 동쪽으로 움직이기 때문이다.",
+          "지구가 공전하기 때문에 태양의 위치가 달라진다.",
+          "지구가 서쪽에서 동쪽으로 자전하기 때문에 태양이 동쪽에서 서쪽으로 움직이는 것처럼 보인다.",
+          "지구가 회전하지 않아도 태양의 위치는 달라진다."
+        ],
+        explanation: "지구가 서쪽에서 동쪽으로 자전하기 때문에 겉보기 운동으로 태양이 동→서로 움직입니다."
+      },
+      {
+        no: 20, unitId: 4, answer: "3",
+        question: "지구의 공전에 대한 설명으로 옳은 것은?",
+        box: null,
+        options: [
+          "달을 중심으로 하루에 한 바퀴씩 도는 것이다.",
+          "태양을 중심으로 하루에 한 바퀴씩 도는 것이다.",
+          "태양을 중심으로 일 년에 한 바퀴씩 서쪽에서 동쪽으로 도는 것이다.",
+          "태양을 중심으로 일 년에 한 바퀴씩 동쪽에서 서쪽으로 도는 것이다.",
+          "지구가 제자리에서 일 년에 한 바퀴씩 도는 것이다."
+        ],
+        explanation: "지구의 공전은 태양을 중심으로 일 년에 한 바퀴씩 서쪽에서 동쪽으로 도는 운동입니다."
+      },
+      {
+        no: 21, unitId: 4, answer: "2",
+        question: "계절에 따라 대표적인 별자리와 별자리의 위치가 달라지는 까닭으로 옳은 것은?",
+        box: null,
+        options: [
+          "지구가 자전하면서 하루 동안 위치가 달라지기 때문이다.",
+          "지구가 태양 주위를 공전하면서 계절에 따라 지구의 위치가 달라지기 때문이다.",
+          "별자리가 실제로 하늘에서 이동하기 때문이다.",
+          "계절에 따라 별의 밝기가 달라지기 때문이다.",
+          "태양이 지구 주위를 일 년에 한 바퀴씩 돌기 때문이다."
+        ],
+        explanation: "지구가 태양 주위를 공전함에 따라 밤하늘에 보이는 방향의 별자리가 달라집니다."
+      },
+      {
+        no: 22, unitId: 5, answer: "4",
+        question: "페트병에 공기를 넣기 전과 넣은 뒤의 무게를 측정하는 실험 결과와 이를 통해 알 수 있는 기체의 성질로 옳은 것은?",
+        box: null,
+        options: [
+          "무게가 줄어든다 — 기체는 무게가 없다.",
+          "무게가 변하지 않는다 — 기체는 무게가 없다.",
+          "무게가 늘어난다 — 기체는 부피가 없다.",
+          "무게가 늘어난다 — 기체는 무게가 있다.",
+          "무게가 줄어든다 — 기체는 위로 올라가는 성질이 있다."
+        ],
+        explanation: "공기를 더 주입하면 페트병의 무게가 늘어나므로 기체도 무게가 있음을 알 수 있습니다."
+      },
+      {
+        no: 23, unitId: 5, answer: "1",
+        question: "삼각 플라스크 입구에 비누막을 만든 뒤 따뜻한 물과 얼음물에 각각 넣었을 때의 변화로 옳은 것은?",
+        box: null,
+        options: [
+          "따뜻한 물 — 부풀어 오름 / 얼음물 — 아래로 내려감",
+          "따뜻한 물 — 아래로 내려감 / 얼음물 — 부풀어 오름",
+          "두 경우 모두 부풀어 오른다.",
+          "두 경우 모두 아래로 내려간다.",
+          "두 경우 모두 변화가 없다."
+        ],
+        explanation: "기체는 온도가 높아지면 부피가 늘어나고, 온도가 낮아지면 부피가 줄어듭니다."
+      },
+      {
+        no: 24, unitId: 5, answer: "1",
+        question: "다음 ㉠, ㉡에서 기체의 부피가 달라진 까닭을 옳게 짝지은 것은?",
+        box: "㉠ 호핑볼에 앉으면 호핑볼이 찌그러진다.<br>㉡ 여름철 햇빛이 비치는 곳에 과자 봉지를 두면 과자 봉지가 부풀어 오른다.",
+        options: [
+          "㉠ 압력이 높아져 부피가 줄어듦 / ㉡ 온도가 높아져 부피가 늘어남",
+          "㉠ 온도가 높아져 부피가 늘어남 / ㉡ 압력이 높아져 부피가 줄어듦",
+          "㉠ 압력이 낮아져 부피가 늘어남 / ㉡ 온도가 낮아져 부피가 줄어듦",
+          "㉠ 온도가 낮아져 부피가 줄어듦 / ㉡ 압력이 낮아져 부피가 늘어남",
+          "㉠, ㉡ 모두 압력이 높아져 부피가 줄어듦"
+        ],
+        explanation: "㉠은 가해진 압력이 커져 부피 감소, ㉡은 열에 의해 온도가 올라가 부피가 증가한 현상입니다."
+      },
+      {
+        no: 25, unitId: 5, answer: "5",
+        question: "기체의 성질과 이용에 대한 설명으로 옳지 않은 것은?",
+        box: null,
+        options: [
+          "산소는 색깔과 냄새가 없고, 다른 물질이 탈 때 필요하다.",
+          "산소는 환자의 호흡 장치에 이용된다.",
+          "이산화 탄소는 색깔과 냄새가 없고, 다른 물질이 타는 것을 막는다.",
+          "이산화 탄소는 탄산음료를 만들거나 소화기에 이용된다.",
+          "이산화 탄소는 다른 물질이 잘 타게 도와주므로 응급 환자의 호흡 장치에 이용된다."
+        ],
+        explanation: "연소를 돕고 호흡에 필요한 기체는 산소이며, 이산화 탄소는 불을 끄는 소화기에 쓰입니다."
+      },
+      {
+        no: 26, unitId: 6, answer: "5",
+        question: "감염병의 뜻과 종류에 대한 설명으로 옳은 것은?",
+        box: null,
+        options: [
+          "영양이 부족하여 걸리는 질병으로, 충치·근시 등이 있다.",
+          "유전으로만 걸리는 질병으로, 다른 사람에게 옮지 않는다.",
+          "몸을 다쳐서 생기는 질병으로, 골절·화상 등이 있다.",
+          "날씨가 추워질 때만 걸리는 질병으로, 여름에는 걸리지 않는다.",
+          "세균이나 바이러스 등이 우리 몸에 들어와서 걸리는 질병으로, 독감·수두·볼거리 등이 있다."
+        ],
+        explanation: "감염병은 병원체(세균, 바이러스 등)가 인체에 침입하여 발생하고 전파될 수 있는 질환입니다."
+      },
+      {
+        no: 27, unitId: 6, answer: "5",
+        question: "컵 한 개로 물이나 음료를 여러 사람이 나누어 마시는 습관을 고쳐야 하는 까닭으로 가장 알맞은 것은?",
+        box: null,
+        options: [
+          "컵이 쉽게 깨질 수 있기 때문이다.",
+          "물의 온도가 낮아지기 때문이다.",
+          "컵을 씻는 데 물이 많이 들기 때문이다.",
+          "음료의 맛이 변하기 때문이다.",
+          "침을 통해 감염병이 옮을 수 있기 때문이다."
+        ],
+        explanation: "타액(침)을 통해 호흡기나 소화기 감염병 병원체가 전파될 수 있습니다."
+      },
+      {
+        no: 28, unitId: 6, answer: "3",
+        question: "감염병 예방을 위해 더 효과적인 손 씻기 방법과 그 까닭으로 옳은 것은?",
+        box: "㉠ 흐르는 물에 30초 동안 손 씻기<br>㉡ 비누칠을 하여 흐르는 물에 30초 동안 손 씻기",
+        options: [
+          "㉠ — 물만 사용해도 세균이 모두 씻겨 나가기 때문이다.",
+          "㉠ — 비누를 쓰면 손이 건조해지기 때문이다.",
+          "㉡ — 비누로 씻으면 손에 묻은 세균이나 바이러스를 더 잘 씻어 낼 수 있기 때문이다.",
+          "㉡ — 비누 거품이 세균을 직접 죽이기 때문이다.",
+          "㉠과 ㉡의 효과는 서로 같다."
+        ],
+        explanation: "비누의 계면활성 성분이 피부의 세균과 바이러스를 효과적으로 분리하여 씻어냅니다."
+      },
+      {
+        no: 29, unitId: 6, answer: "3",
+        question: "해수면 상승 피해 모형실험에 대한 설명입니다. ㉠~㉢ 중 잘못 설명한 것과 옳게 고친 내용으로 알맞은 것은?",
+        box: "플라스틱 용기 안에 물을 계속 부으면 ㉠ 용기 안 물의 양은 늘어나고 ㉡ 수면은 상승한다. 시간이 지날수록 ㉢ 바닷가 마을 모형의 모습에는 변화가 없다.",
+        options: [
+          "㉠ — 용기 안 물의 양은 줄어든다.",
+          "㉡ — 수면은 하강한다.",
+          "㉢ — 바닷가 마을 모형은 물에 잠기게 된다.",
+          "㉢ — 바닷가 마을 모형이 위로 떠오른다.",
+          "잘못 설명한 것이 없다."
+        ],
+        explanation: "수면이 상승하면 낮은 지대의 해안가 마을 모형은 침수 피해를 입게 됩니다."
+      },
+      {
+        no: 30, unitId: 6, answer: "1",
+        question: "오늘날 계절 길이의 변화와 그에 따른 생활 변화로 옳은 것은?",
+        box: null,
+        options: [
+          "겨울이 짧아지고 여름이 길어져, 가벼운 옷차림을 하는 날이 많아진다.",
+          "겨울이 길어지고 여름이 짧아져, 두꺼운 옷을 입는 날이 많아진다.",
+          "봄과 가을이 길어져, 농사 기간이 크게 늘어난다.",
+          "네 계절의 길이가 모두 같아져, 생활에 변화가 없다.",
+          "여름이 짧아져 무더위로 인한 질병이 줄어든다."
+        ],
+        explanation: "지구 온난화 등 기후변화로 인해 겨울은 짧아지고 여름의 시작이 빨라지며 길어지고 있습니다."
+      }
     ];
 
+    // 문제 화면 렌더링 (CBT 온라인 풀이 형식)
     function renderQuizInputs() {
       const container = document.getElementById("questionsContainer");
       container.innerHTML = quizConfig.map(q => {
-        let inputField = '';
+        const boxHtml = q.box ? `
+          <div class="my-3 p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs md:text-sm text-slate-700 leading-relaxed font-medium">
+            ${q.box}
+          </div>` : '';
 
-        if (q.type === 'select') {
-          inputField = `
-            <select id="ans_${q.no}" class="border rounded-lg p-2 text-center text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-500 bg-white">
-              <option value="">선택</option>
-              ${q.options.map(opt => `<option value="${opt}">${opt}번</option>`).join('')}
-            </select>`;
-        } else if (q.type === 'multi_select') {
-          inputField = `
-            <div class="flex items-center gap-1.5" id="multi_${q.no}">
-              ${q.options.map(opt => `
-                <label class="flex items-center gap-0.5 text-xs font-semibold cursor-pointer">
-                  <input type="checkbox" value="${opt}" class="w-3.5 h-3.5 text-indigo-600 rounded" />
-                  <span>${opt}</span>
-                </label>
-              `).join('')}
-            </div>`;
-        } else {
-          inputField = `
-            <input type="text" id="ans_${q.no}" placeholder="단답 입력" class="w-28 border rounded-lg p-2 text-center text-sm font-semibold outline-none focus:ring-2 focus:ring-indigo-500" />`;
-        }
+        const optionsHtml = q.options.map((opt, idx) => {
+          const num = idx + 1;
+          return `
+            <label class="flex items-start gap-3 p-3 rounded-xl border border-slate-200 hover:bg-indigo-50/50 hover:border-indigo-300 transition cursor-pointer">
+              <input type="radio" name="q_${q.no}" value="${num}" class="mt-0.5 w-4 h-4 text-indigo-600 focus:ring-indigo-500 cursor-pointer" />
+              <span class="text-sm text-slate-700 leading-snug">
+                <strong class="text-slate-900 mr-1">${['①','②','③','④','⑤'][idx]}</strong> ${opt}
+              </span>
+            </label>
+          `;
+        }).join('');
 
         return `
-          <div class="flex items-center justify-between border border-slate-100 bg-slate-50/50 p-3 rounded-xl">
-            <span class="font-bold text-slate-700 w-12">${q.no}번</span>
-            <div class="flex items-center gap-1.5">
-              ${inputField}
-              ${q.note ? `<span class="text-[10px] text-indigo-600 font-medium">${q.note}</span>` : ''}
+          <article class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 md:p-6 transition hover:shadow-md" id="card_q_${q.no}">
+            <div class="flex items-start gap-3">
+              <span class="flex-shrink-0 w-8 h-8 rounded-xl bg-indigo-600 text-white font-black text-sm flex items-center justify-center shadow-sm">
+                ${q.no}
+              </span>
+              <div class="flex-grow">
+                <h3 class="text-base font-bold text-slate-900 leading-relaxed">${q.question}</h3>
+                ${boxHtml}
+                <div class="grid grid-cols-1 gap-2 mt-3">
+                  ${optionsHtml}
+                </div>
+              </div>
             </div>
-          </div>
+          </article>
         `;
       }).join('');
     }
 
-    function cleanStr(val) {
-      if (!val) return "";
-      return val.toString().replace(/\s+/g, "").replace(/㉠/g, "ㄱ").replace(/㉡/g, "ㄴ").replace(/㉢/g, "ㄷ").replace(/㉣/g, "ㄹ");
-    }
-
+    // 서버 전송
     async function syncToServer(data) {
       try {
         await fetch(GOOGLE_API_URL, {
@@ -317,6 +666,7 @@
       }
     }
 
+    // 학생 답안 제출
     async function submitAnswers() {
       const classNum = document.getElementById("classNum").value.trim();
       const studentNum = document.getElementById("studentNum").value.trim();
@@ -325,37 +675,47 @@
 
       if (!classNum || !studentNum || !name) {
         alert("반, 번호, 이름을 모두 입력해주세요.");
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
+      }
+
+      // 미응답 문항 점검
+      const unselected = [];
+      quizConfig.forEach(q => {
+        const checked = document.querySelector(`input[name="q_${q.no}"]:checked`);
+        if (!checked) unselected.push(q.no);
+      });
+
+      if (unselected.length > 0) {
+        if (!confirm(`아직 풀지 않은 문제가 ${unselected.length}개 있습니다 (${unselected.slice(0, 5).join(', ')}${unselected.length > 5 ? '...등' : ''}번).\n이대로 제출하시겠습니까?`)) {
+          // 첫 번째 미응답 문제로 스크롤
+          const target = document.getElementById(`card_q_${unselected[0]}`);
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return;
+        }
       }
 
       const submitBtn = document.getElementById("btnSubmit");
       submitBtn.disabled = true;
-      submitBtn.textContent = "채점 및 전송 중...";
+      submitBtn.textContent = "채점 및 결과 전송 중...";
 
       let correctCount = 0;
       let wrongQuestions = [];
       let answersRecord = {};
 
       quizConfig.forEach(q => {
-        let isCorrect = false;
-        let recordedVal = "";
+        const checked = document.querySelector(`input[name="q_${q.no}"]:checked`);
+        const userVal = checked ? checked.value : "";
+        answersRecord[q.no] = userVal;
 
-        if (q.type === 'multi_select') {
-          const checked = Array.from(document.querySelectorAll(`#multi_${q.no} input:checked`)).map(cb => cb.value);
-          recordedVal = checked.join(',');
-          const cleanUser = cleanStr(recordedVal);
-          isCorrect = q.answer.some(ans => cleanStr(ans) === cleanUser);
+        if (userVal === q.answer) {
+          correctCount++;
         } else {
-          const inputEl = document.getElementById(`ans_${q.no}`);
-          recordedVal = inputEl.value.trim();
-          isCorrect = q.answer.some(ans => cleanStr(ans) === cleanStr(recordedVal));
+          wrongQuestions.push(q.no);
         }
-
-        answersRecord[q.no] = recordedVal;
-        if (isCorrect) correctCount++;
-        else wrongQuestions.push(q.no);
       });
 
+      // 30문항 100점 만점 환산
       const calculatedScore = Math.round((correctCount / 30) * 100);
 
       const submission = {
@@ -374,7 +734,7 @@
       await syncToServer(submission);
 
       submitBtn.disabled = false;
-      submitBtn.textContent = "채점하기 및 제출";
+      submitBtn.textContent = "답안 최종 제출하기";
 
       showStudentResult(name, calculatedScore, wrongQuestions);
     }
@@ -382,24 +742,25 @@
     function showStudentResult(name, score, wrongQuestions) {
       const card = document.getElementById("resultCard");
       card.classList.remove("hidden");
-      document.getElementById("resultGreeting").textContent = `${name} 학생 채점 완료 (선생님께 전송되었습니다)`;
+      document.getElementById("resultGreeting").textContent = `${name} 학생 채점 완료 (제출 완료)`;
       document.getElementById("resultScore").textContent = score;
 
       const wrongContainer = document.getElementById("wrongItemsContainer");
       if (wrongQuestions.length === 0) {
-        wrongContainer.innerHTML = `<div class="p-4 bg-emerald-50 text-emerald-800 rounded-xl font-semibold text-center">🎉 만점입니다! 완벽히 이해하고 있습니다.</div>`;
+        wrongContainer.innerHTML = `<div class="p-4 bg-emerald-50 text-emerald-800 rounded-xl font-bold text-center">🎉 30문제 모두 맞혔습니다! 완벽합니다!</div>`;
       } else {
         wrongContainer.innerHTML = `
           <div class="p-4 bg-rose-50 border border-rose-200 rounded-xl space-y-2">
-            <p class="text-rose-700 font-medium">틀린 문항을 시험지에서 다시 확인해 보세요.</p>
+            <p class="text-rose-700 text-xs font-semibold">틀린 문항을 확인하고 다시 복습해 보세요.</p>
             <div class="flex flex-wrap gap-2 pt-1">
-              ${wrongQuestions.map(no => `<span class="px-3 py-1 bg-white border border-rose-300 text-rose-600 font-bold rounded-lg">${no}번</span>`).join('')}
+              ${wrongQuestions.map(no => `<span class="px-3 py-1 bg-white border border-rose-300 text-rose-600 font-bold rounded-lg text-xs shadow-sm">${no}번</span>`).join('')}
             </div>
           </div>`;
       }
-      window.scrollTo({ top: card.offsetTop - 20, behavior: 'smooth' });
+      card.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    // 뷰 전환
     function switchView(view) {
       const sView = document.getElementById("studentView");
       const tView = document.getElementById("teacherView");
@@ -409,7 +770,7 @@
       if (view === 'student') {
         sView.classList.remove("hidden");
         tView.classList.add("hidden");
-        btnS.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 text-white transition";
+        btnS.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 text-white transition shadow-sm";
         btnT.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300 transition";
         stopAutoRefresh();
       } else {
@@ -424,7 +785,7 @@
 
         sView.classList.add("hidden");
         tView.classList.remove("hidden");
-        btnT.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 text-white transition";
+        btnT.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 text-white transition shadow-sm";
         btnS.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300 transition";
         fetchServerData(true);
         if (isAutoRefreshEnabled) startAutoRefresh();
@@ -449,13 +810,10 @@
       }
     }
 
-    // ⚡ [핵심 기능] 이미 제출된 전 학생 데이터 일괄 재채점 함수
+    // 전체 일괄 재채점
     async function regradeAllSubmissions() {
-      if (globalSubmissions.length === 0) return alert("재채점할 학생 데이터가 없습니다.");
-
-      if (!confirm("현재 설정된 정답을 기준으로 이미 제출된 모든 학생의 답안을 재채점하시겠습니까?\n구글 스프레드시트의 점수도 자동 갱신됩니다.")) {
-        return;
-      }
+      if (globalSubmissions.length === 0) return alert("재채점할 데이터가 없습니다.");
+      if (!confirm("현재 설정된 정답을 기준으로 이미 제출된 모든 학생의 답안을 재채점하시겠습니까?\n구글 시트의 점수도 자동 갱신됩니다.")) return;
 
       const btn = document.getElementById("btnRegrade");
       btn.disabled = true;
@@ -466,27 +824,22 @@
         let newWrongList = [];
 
         quizConfig.forEach(q => {
-          const userVal = (s.answers && s.answers[q.no]) ? s.answers[q.no] : "";
-          const cleanUser = cleanStr(userVal);
-          const isCorrect = q.answer.some(ans => cleanStr(ans) === cleanUser);
-
-          if (isCorrect) {
+          const userVal = (s.answers && s.answers[q.no]) ? String(s.answers[q.no]).trim() : "";
+          if (userVal === q.answer) {
             correctCount++;
           } else {
             newWrongList.push(q.no);
           }
         });
 
-        // 100점 만점 재환산
         s.score = Math.round((correctCount / 30) * 100);
         s.wrongList = newWrongList;
 
-        // 스프레드시트에 갱신된 점수 및 오답 정보 동기화 전송
         await syncToServer(s);
       }
 
       btn.disabled = false;
-      btn.innerHTML = `<span>⚡</span> 전체 재채점 (정답 갱신)`;
+      btn.innerHTML = `<span>⚡</span> 전체 재채점`;
       recalculateAndRender();
       alert("모든 학생의 점수와 오답이 성공적으로 재계산되었습니다!");
     }
@@ -597,12 +950,14 @@
         document.getElementById("statFemaleAvg").textContent = "0점";
       }
 
+      // 문항별 오답수 집계
       const wrongCounts = {};
       quizConfig.forEach(q => wrongCounts[q.no] = 0);
       activeList.forEach(s => {
         s.wrongList.forEach(qNo => wrongCounts[qNo]++);
       });
 
+      // 단원별 취약도 집계
       const unitResults = unitDefinitions.map(unit => {
         let totalInstances = unit.questions.length * activeList.length;
         let totalWrong = 0;
@@ -644,11 +999,12 @@
             </div>
             <div class="flex justify-between items-center text-[11px] text-slate-400 pt-0.5">
               <span>문항: ${u.questionsStr}번</span>
-              <span>오답 건수: ${u.wrongCount}건</span>
+              <span>오답: ${u.wrongCount}건</span>
             </div>
           </div>`;
       }).join('');
 
+      // 개별 문항 오답률
       document.getElementById("questionStatsContainer").innerHTML = quizConfig.map(q => {
         const wrongRate = activeList.length > 0 ? Math.round((wrongCounts[q.no] / activeList.length) * 100) : 0;
         let badgeColor = "bg-slate-100 text-slate-600";
@@ -662,6 +1018,7 @@
           </div>`;
       }).join('');
 
+      // 학생 표 정렬
       globalSubmissions.sort((a, b) => {
         let valA, valB;
         if (currentSortColumn === 'studentNum') {
@@ -706,22 +1063,12 @@
       }).join('');
     }
 
-    function diagnoseSocialMistake(q, userAns) {
-      if (!userAns || userAns.trim() === "") return { reason: "미기입 (빈칸)", color: "text-slate-400 bg-slate-100" };
-      if (q.type === 'multi_select') {
-        const count = userAns.split(',').length;
-        if (count < 2) return { reason: "개수 부족 (2개 선택 필요)", color: "text-amber-600 bg-amber-50" };
-      }
-      if (q.no === 8 && userAns.includes("지방")) return { reason: "유사 정답 (지방자치제 요구)", color: "text-blue-600 bg-blue-50" };
-      if (q.no === 24 && userAns.includes("영상")) return { reason: "용어 미흡 (디지털 공간 영상 정보)", color: "text-blue-600 bg-blue-50" };
-      return { reason: "개념 및 사실 오답", color: "text-rose-600 bg-rose-50" };
-    }
-
+    // 학생 개별 상세 모달 (오답 분석 및 정답·해설 보기)
     function openDetailModal(subId) {
       const student = globalSubmissions.find(s => s.id === subId);
       if (!student) return;
 
-      document.getElementById("modalStudentTitle").textContent = `${student.name} 학생 오답 심층 분석`;
+      document.getElementById("modalStudentTitle").textContent = `${student.name} 학생 (${student.studentNum}번) 오답 심층 분석`;
       document.getElementById("modalStudentSub").textContent = `총점: ${student.score}점 / 틀린 문항: ${student.wrongList.length}문항`;
 
       const modalContent = document.getElementById("modalContent");
@@ -731,25 +1078,29 @@
       } else {
         modalContent.innerHTML = student.wrongList.map(qNo => {
           const q = quizConfig.find(item => item.no === qNo);
-          const userVal = student.answers ? student.answers[qNo] : "미기록";
-          const diag = diagnoseSocialMistake(q, userVal);
-          const correctDisplay = q.answer[0];
+          const userVal = student.answers ? student.answers[qNo] : "미선택";
+          const userLabel = userVal ? `${userVal}번` : "미선택";
+          const correctLabel = `${q.answer}번`;
 
           return `
-            <div class="border border-slate-200 rounded-xl p-3.5 bg-slate-50/50 flex flex-col gap-2">
-              <div class="flex justify-between items-center">
+            <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 space-y-2.5 text-xs">
+              <div class="flex justify-between items-center border-b pb-2">
                 <span class="font-bold text-rose-600 text-sm">${q.no}번 문항</span>
-                <span class="text-xs px-2.5 py-0.5 rounded font-semibold ${diag.color}">${diag.reason}</span>
+                <span class="px-2 py-0.5 rounded font-semibold bg-rose-100 text-rose-700">개념 오답</span>
               </div>
-              <div class="grid grid-cols-2 gap-2 text-xs pt-1">
+              <p class="font-bold text-slate-800 text-sm">${q.question}</p>
+              <div class="grid grid-cols-2 gap-2 pt-1">
                 <div class="bg-white p-2.5 rounded-lg border border-slate-200">
-                  <div class="text-slate-400 font-medium mb-0.5">학생 제출</div>
-                  <div class="font-bold text-slate-900 truncate">${userVal || "(빈칸)"}</div>
+                  <div class="text-slate-400 font-medium mb-0.5">학생 선택</div>
+                  <div class="font-extrabold text-rose-600 text-sm">${userLabel}</div>
                 </div>
                 <div class="bg-white p-2.5 rounded-lg border border-indigo-100">
-                  <div class="text-indigo-400 font-medium mb-0.5">실제 정답</div>
-                  <div class="font-bold text-indigo-600 truncate">${correctDisplay}</div>
+                  <div class="text-indigo-500 font-medium mb-0.5">실제 정답</div>
+                  <div class="font-extrabold text-indigo-600 text-sm">${correctLabel}</div>
                 </div>
+              </div>
+              <div class="bg-white p-3 rounded-lg border border-slate-200 text-slate-600 leading-relaxed">
+                <strong class="text-indigo-700">💡 해설:</strong> ${q.explanation}
               </div>
             </div>`;
         }).join('');
@@ -772,7 +1123,7 @@
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `사회평가_집계_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.download = `과학평가_집계_${new Date().toISOString().slice(0, 10)}.csv`;
       a.click();
     }
 
