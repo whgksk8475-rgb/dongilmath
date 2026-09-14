@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>6학년 1학기 과학 총괄 단원평가</title>
+  <title>수학 6-2 1단원. 분수의 나눗셈 (심화 1회)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     input::-webkit-outer-spin-button,
@@ -14,12 +14,12 @@
 
   <div class="max-w-4xl mx-auto space-y-6">
     
-    <!-- 상단 헤더 -->
+    <!-- 헤더 -->
     <header class="bg-white rounded-2xl shadow-sm p-6 flex flex-wrap justify-between items-center gap-4">
       <div>
-        <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full uppercase tracking-wider">CBT Online Test</span>
-        <h1 class="text-2xl font-extrabold text-slate-900 mt-1">6학년 과학 총괄 단원평가</h1>
-        <p class="text-xs text-slate-500 mt-0.5">총 30문항 · 5지선다 객관식 · 화면에서 문제를 읽고 정답을 선택하세요.</p>
+        <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full uppercase tracking-wider">CBT Math Test</span>
+        <h1 class="text-2xl font-extrabold text-slate-900 mt-1">수학 6-2 1. 분수의 나눗셈 (심화 1회)</h1>
+        <p class="text-xs text-slate-500 mt-0.5">총 20문항 (문항당 5점, 100점 만점) · 분수는 분자/분모 칸에 나누어 입력하세요.</p>
       </div>
       <div class="flex gap-2">
         <button onclick="switchView('student')" id="btnStudent" class="px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 text-white transition shadow-sm">문제 풀기</button>
@@ -63,7 +63,7 @@
       </section>
 
       <!-- 문제 출력 컨테이너 -->
-      <section class="space-y-4" id="questionsContainer"></section>
+      <section class="space-y-5" id="questionsContainer"></section>
 
       <!-- 제출 버튼 -->
       <div class="pt-4 pb-8 text-center">
@@ -72,12 +72,12 @@
         </button>
       </div>
 
-      <!-- 제출 후 결과 카드 -->
+      <!-- 제출 결과 카드 -->
       <section id="resultCard" class="hidden bg-white rounded-2xl shadow-xl border-2 border-indigo-500 p-6 space-y-4">
         <div class="flex items-center justify-between border-b pb-4">
           <div>
             <h3 class="text-xl font-bold text-slate-900" id="resultGreeting">채점 완료</h3>
-            <p class="text-xs text-slate-500 mt-1">답안이 선생님께 전송되었습니다. 틀린 문항을 복습해 보세요.</p>
+            <p class="text-xs text-slate-500 mt-1">답안이 선생님께 전송되었습니다. 틀린 문항 번호를 확인하고 다시 풀어보세요.</p>
           </div>
           <div class="text-right">
             <span class="text-3xl font-black text-indigo-600" id="resultScore">0</span>
@@ -94,14 +94,14 @@
     <!-- [2] 교사 분석 대시보드 화면 -->
     <section id="teacherView" class="hidden space-y-6">
       
-      <!-- 통계 요약 카드 (미제출자 인원 및 확인 버튼 포함) -->
+      <!-- 통계 카드 요약 -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-between">
           <div class="flex items-center justify-between">
             <span class="text-xs font-semibold text-slate-400">응시 현황</span>
             <div class="flex items-center gap-1 text-[11px] text-slate-500">
               <span>정원:</span>
-              <input type="number" id="classRosterCount" value="25" min="1" max="50" onchange="updateRosterCount()" class="w-10 border rounded px-1 py-0.5 text-center font-bold text-indigo-600" title="학급 전체 인원을 입력하세요." />명
+              <input type="number" id="classRosterCount" value="25" min="1" max="50" onchange="updateRosterCount()" class="w-10 border rounded px-1 py-0.5 text-center font-bold text-indigo-600" />명
             </div>
           </div>
           <div class="mt-2">
@@ -118,7 +118,7 @@
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
           <div class="text-xs font-semibold text-slate-400">학급 전체 평균</div>
           <div class="text-2xl font-bold text-indigo-600 mt-2" id="statClassAvg">0점</div>
-          <div class="text-xs text-slate-400 mt-1" id="statExcludedCount">제외 인원: 0명</div>
+          <div class="text-xs text-slate-400 mt-1" id="statExcludedCount">통계 제외: 0명</div>
         </div>
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
           <div class="text-xs font-semibold text-slate-400">남학생 평균</div>
@@ -132,14 +132,14 @@
         </div>
       </div>
 
-      <!-- 단원별 취약도 분석 카드 -->
+      <!-- 영역별 취약도 분석 -->
       <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-4">
         <div class="flex items-center justify-between">
           <div>
-            <h3 class="text-base font-bold text-slate-800">과학 6개 영역별 취약도 분석 (오답률 순)</h3>
-            <p class="text-xs text-slate-400 mt-0.5">학생들이 가장 어려워하는 단원부터 순서대로 자동 정렬됩니다.</p>
+            <h3 class="text-base font-bold text-slate-800">단원 세부 영역별 취약도 분석 (오답률 순)</h3>
+            <p class="text-xs text-slate-400 mt-0.5">분수의 나눗셈 개념 중 학생들이 취약한 유형부터 정렬됩니다.</p>
           </div>
-          <span class="text-xs bg-indigo-50 text-indigo-700 font-bold px-2.5 py-1 rounded-full">단원별 평균 오답률</span>
+          <span class="text-xs bg-indigo-50 text-indigo-700 font-bold px-2.5 py-1 rounded-full">영역별 평균 오답률</span>
         </div>
         <div id="unitStatsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3.5"></div>
       </div>
@@ -160,7 +160,7 @@
         <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
           <div>
             <h3 class="text-base font-bold text-slate-800">학생별 제출 현황</h3>
-            <p class="text-xs text-slate-400 mt-0.5">이름을 클릭하면 각 문항별 학생 선택 번호 및 문항별 해설을 볼 수 있습니다.</p>
+            <p class="text-xs text-slate-400 mt-0.5">이름을 클릭하면 각 문항별 학생 답안과 실제 정답을 대조할 수 있습니다.</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <button onclick="regradeAllSubmissions()" id="btnRegrade" class="px-3 py-1.5 bg-amber-500 text-white rounded-lg text-xs font-bold hover:bg-amber-600 shadow-sm transition flex items-center gap-1">
@@ -211,13 +211,13 @@
 
   </div>
 
-  <!-- [모달 1] 학생 개별 상세 답안 & 해설 분석 모달 -->
+  <!-- [모달 1] 학생 상세 답안 대조 모달 -->
   <div id="detailModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden">
       <div class="p-5 border-b flex justify-between items-center bg-slate-50">
         <div>
           <h3 class="text-lg font-bold text-slate-900" id="modalStudentTitle">학생 개별 답안 분석</h3>
-          <p class="text-xs text-slate-500 mt-0.5" id="modalStudentSub">제출 답안, 정답 및 문항별 해설</p>
+          <p class="text-xs text-slate-500 mt-0.5" id="modalStudentSub">제출 답안, 정답 및 해설</p>
         </div>
         <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-700 text-2xl font-bold p-1">&times;</button>
       </div>
@@ -234,7 +234,7 @@
       <div class="p-5 border-b flex justify-between items-center bg-indigo-50">
         <div>
           <h3 class="text-lg font-bold text-indigo-950" id="qModalTitle">문항별 오답자 분석</h3>
-          <p class="text-xs text-indigo-600 mt-0.5" id="qModalSub">문항 정보 및 학생별 오답 선택지</p>
+          <p class="text-xs text-indigo-600 mt-0.5" id="qModalSub">문항 정보 및 학생별 오답</p>
         </div>
         <button onclick="closeQuestionWrongModal()" class="text-slate-400 hover:text-slate-700 text-2xl font-bold p-1">&times;</button>
       </div>
@@ -251,13 +251,13 @@
       <div class="p-5 border-b flex justify-between items-center bg-rose-50">
         <div>
           <h3 class="text-lg font-bold text-rose-950">📋 아직 제출하지 않은 학생</h3>
-          <p class="text-xs text-rose-600 mt-0.5" id="unsubmittedModalSub">학급 정원 대비 미응시자 번호 목록</p>
+          <p class="text-xs text-rose-600 mt-0.5">학급 정원 대비 미응시자 번호 목록</p>
         </div>
         <button onclick="closeUnsubmittedModal()" class="text-slate-400 hover:text-slate-700 text-2xl font-bold p-1">&times;</button>
       </div>
       <div class="p-5 overflow-y-auto space-y-4">
         <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600 leading-relaxed">
-          설정된 학급 정원(1번부터 <span id="modalRosterDisplay" class="font-bold text-slate-900">25번</span>) 중 아직 제출 기록이 없는 학생의 번호입니다.
+          학급 정원(1번부터 <span id="modalRosterDisplay" class="font-bold text-slate-900">25번</span>) 중 제출하지 않은 번호입니다.
         </div>
         <div>
           <div class="text-xs font-bold text-slate-500 mb-2">미제출 번호 (<span id="unsubmittedCountDisplay" class="text-rose-600">0</span>명)</div>
@@ -281,419 +281,293 @@
 
     let currentSortColumn = 'studentNum';
     let currentSortOrder = 'asc';
+    let totalClassRoster = parseInt(localStorage.getItem("math621_class_roster") || "25", 10);
 
-    // 기본 학급 정원 (로컬스토리지 저장 지원)
-    let totalClassRoster = parseInt(localStorage.getItem("science_class_roster") || "25", 10);
-
+    // 1단원 세부 하위 영역 정의
     const unitDefinitions = [
-      { id: 1, name: "1. 산과 염기", questions: [1, 2, 3, 4, 5] },
-      { id: 2, name: "2. 물체의 운동", questions: [6, 7, 8, 9, 10] },
-      { id: 3, name: "3. 식물의 구조와 기능", questions: [11, 12, 13, 14, 15, 16] },
-      { id: 4, name: "4. 지구의 운동", questions: [17, 18, 19, 20, 21] },
-      { id: 5, name: "5. 여러 가지 기체", questions: [22, 23, 24, 25] },
-      { id: 6, name: "6. 감염병 / 기후변화와 생활", questions: [26, 27, 28, 29, 30] }
+      { id: 1, name: "(자연수)÷(분수) 및 계산 원리", questions: [1, 2, 3, 4] },
+      { id: 2, name: "(분수)÷(분수) 및 통분 연산", questions: [5, 6, 7, 8, 9, 10] },
+      { id: 3, name: "분수의 크기 비교 및 식 판별", questions: [11, 12, 13, 14] },
+      { id: 4, name: "실생활 문제 해결 및 도형 활용", questions: [15, 16, 17, 18, 19, 20] }
     ];
 
+    // 수학 6-2 1단원 심화 1회 20문항 데이터[cite: 4]
     const quizConfig = [
       {
-        no: 1, unitId: 1, answer: "1",
-        question: "다음은 여러 가지 용액을 어떤 분류 기준에 따라 나눈 것입니다. 분류 기준으로 가장 알맞은 것은?",
-        box: "[대상 용액] 탄산수, 석회수, 묽은 염산, 빨랫비누 물<br>• 그렇다: 석회수, 빨랫비누 물<br>• 그렇지 않다: 탄산수, 묽은 염산",
+        no: 1, unitId: 1, type: "dual_input",
+        title: "□ 안에 알맞은 수를 각각 써넣으세요.",
+        expr: "2 ÷ (1/4) = 2 × [ ㉠ ] = [ ㉡ ]",
+        labels: ["㉠", "㉡"],
+        answers: [["4"], ["8"]],
+        displayAns: "㉠: 4, ㉡: 8",
+        explanation: "자연수에 단위분수의 분모(4)를 곱해 계산하므로 2 × 4 = 8입니다."
+      },
+      {
+        no: 2, unitId: 1, type: "box_chain",
+        title: "빈칸에 알맞은 수를 순서대로 완성하세요.",
+        expr: "7/14 ÷ 9/14 는 1/14이 7개, 9개이므로 [ ㉠ ] ÷ [ ㉡ ] = [ ㉢ / ㉣ ]",
+        labels: ["㉠", "㉡", "분자(㉢)", "분모(㉣)"],
+        answers: [["7"], ["9"], ["7"], ["9"]],
+        displayAns: "7 ÷ 9 = 7/9",
+        explanation: "분모가 같을 때는 분자끼리 나누어 계산하므로 7 ÷ 9 = 7/9 입니다."
+      },
+      {
+        no: 3, unitId: 1, type: "fraction_only",
+        title: "보기를 참고하여 나눗셈을 계산해 보세요.",
+        box: "[보기] 6 ÷ (5/7) = 6 × (7/5) = 42/5 = 8과 2/5",
+        expr: "2 ÷ (5/6) 의 몫을 구하세요.",
+        answers: ["2 2/5", "12/5"],
+        displayAns: "2와 2/5 (또는 12/5)",
+        explanation: "2 ÷ (5/6) = 2 × (6/5) = 12/5 = 2와 2/5 입니다."
+      },
+      {
+        no: 4, unitId: 1, type: "fraction_only",
+        title: "나눗셈을 곱셈으로 나타내어 계산해 보세요.",
+        expr: "(3/8) ÷ (5/7)",
+        answers: ["21/40"],
+        displayAns: "21/40",
+        explanation: "(3/8) ÷ (5/7) = (3/8) × (7/5) = 21/40 입니다."
+      },
+      {
+        no: 5, unitId: 2, type: "fraction_only",
+        title: "빈칸에 알맞은 수를 써넣으세요.",
+        expr: "(4/9) ÷ (6/7)",
+        answers: ["14/27"],
+        displayAns: "14/27",
+        explanation: "(4/9) × (7/6) = (2×7)/(9×3) = 14/27 입니다."
+      },
+      {
+        no: 6, unitId: 2, type: "single_input",
+        title: "식의 계산 결과(값)를 구하세요.",
+        box: "9 ÷ (3/5) = 9 ÷ ㉠ × ㉡ = ㉢",
+        expr: "㉢ - ㉠ + ㉡ 의 값을 구하세요.",
+        answers: ["17"],
+        displayAns: "17",
+        explanation: "9 ÷ 3 × 5 = 15 이므로 ㉠=3, ㉡=5, ㉢=15 입니다. 따라서 15 - 3 + 5 = 17 입니다."
+      },
+      {
+        no: 7, unitId: 2, type: "fraction_only",
+        title: "대분수를 진분수로 나눈 몫을 구해 보세요.",
+        expr: "대분수: 2와 1/4 &nbsp;&nbsp;|&nbsp;&nbsp; 진분수: 2/7",
+        answers: ["7 7/8", "63/8"],
+        displayAns: "7과 7/8 (또는 63/8)",
+        explanation: "(9/4) ÷ (2/7) = (9/4) × (7/2) = 63/8 = 7과 7/8 입니다."
+      },
+      {
+        no: 8, unitId: 2, type: "fraction_only",
+        title: "1과 2/5 ÷ 3/7 을 계산한 최종 결과를 구하세요.",
+        expr: "1과 2/5 ÷ 3/7",
+        answers: ["3 4/15", "49/15"],
+        displayAns: "3과 4/15 (또는 49/15)",
+        explanation: "(7/5) ÷ (3/7) = (7/5) × (7/3) = 49/15 = 3과 4/15 입니다."
+      },
+      {
+        no: 9, unitId: 2, type: "fraction_only",
+        title: "잘못 계산한 식을 바르게 계산한 결과를 구하세요.",
+        box: "잘못된 풀이: (7/15) ÷ (10/21) = (15/7) × (10/21) = ...",
+        expr: "바르게 계산한 결과를 분수로 구하세요.",
+        answers: ["49/50"],
+        displayAns: "49/50",
+        explanation: "(7/15) ÷ (10/21) = (7/15) × (21/10) = (7×7)/(5×10) = 49/50 입니다."
+      },
+      {
+        no: 10, unitId: 2, type: "dual_fraction",
+        title: "빈칸에 알맞은 두 분수를 각각 구하세요.",
+        box: "• 첫 번째: (7/10) ÷ (3/10)<br>• 두 번째: (5/9) ÷ (8/9)",
+        labels: ["첫 번째 몫", "두 번째 몫"],
+        answers: [["2 1/3", "7/3"], ["5/8"]],
+        displayAns: "첫 번째: 2와 1/3 (또는 7/3), 두 번째: 5/8",
+        explanation: "7 ÷ 3 = 7/3 = 2와 1/3, 5 ÷ 8 = 5/8 입니다."
+      },
+      {
+        no: 11, unitId: 3, type: "select",
+        title: "계산 결과가 더 작은 것을 찾아 기호를 고르세요.",
         options: [
-          "붉은색 리트머스 종이의 색깔이 푸른색으로 변하는가?",
-          "푸른색 리트머스 종이의 색깔이 붉은색으로 변하는가?",
-          "용액이 투명한가?",
-          "용액에서 냄새가 나는가?",
-          "용액에 거품이 생기는가?"
+          "㉠ (11/12) ÷ (2/3)",
+          "㉡ (11/12) ÷ (3/4)"
         ],
-        explanation: "석회수와 빨랫비누 물은 염기성 용액으로 붉은색 리트머스 종이를 푸른색으로 변화시킵니다."
+        answers: ["2", "㉡", "ㄴ"],
+        displayAns: "㉡ (2번)",
+        explanation: "㉠ = 11/8 = 1과 3/8, ㉡ = 11/9 = 1과 2/9 입니다. 1과 2/9가 더 작으므로 ㉡입니다."
       },
       {
-        no: 2, unitId: 1, answer: "2",
-        question: "다음 용액에 페놀프탈레인 용액을 떨어뜨렸을 때, 붉은색으로 변하는 용액끼리 옳게 짝지은 것은?",
-        box: "탄산수, 레몬즙, 석회수, 빨랫비누 물, 묽은 염산, 묽은 수산화 나트륨 용액",
+        no: 12, unitId: 3, type: "select",
+        title: "계산 결과가 다른 하나를 찾아 고르세요.",
         options: [
-          "탄산수, 레몬즙, 묽은 염산",
-          "석회수, 빨랫비누 물, 묽은 수산화 나트륨 용액",
-          "탄산수, 석회수, 묽은 염산",
-          "레몬즙, 빨랫비누 물, 묽은 수산화 나트륨 용액",
-          "여섯 가지 용액 모두"
+          "① (6/7) ÷ (3/14)",
+          "② (8/13) ÷ (2/13)",
+          "③ (9/21) ÷ (1/7)"
         ],
-        explanation: "페놀프탈레인 용액은 염기성 용액에서만 붉은색으로 변합니다 (석회수, 빨랫비누 물, 묽은 수산화 나트륨 용액)."
+        answers: ["3", "③"],
+        displayAns: "③번",
+        explanation: "① = 12 ÷ 3 = 4, ② = 8 ÷ 2 = 4, ③ = 9 ÷ 3 = 3 이므로 ③이 다릅니다."
       },
       {
-        no: 3, unitId: 1, answer: "4",
-        question: "대리암 조각과 두부를 각각 묽은 염산과 묽은 수산화 나트륨 용액에 넣고 관찰한 결과입니다. ㉠~㉣ 중 잘못된 것은?",
-        box: "[묽은 염산] 대리암 조각 → ㉠ 녹으면서 기포가 발생한다.<br>[묽은 수산화 나트륨 용액] 대리암 조각 → ㉡ 아무 변화가 없다.<br>[묽은 염산] 두부 → ㉢ 아무 변화가 없다.<br>[묽은 수산화 나트륨 용액] 두부 → ㉣ 기포가 발생하며 두부가 부풀어 오른다.",
-        options: ["㉠", "㉡", "㉢", "㉣", "잘못된 것이 없다."],
-        explanation: "염기성 용액은 단백질을 녹여 두부가 흐물흐물해지며 녹지만 기포가 발생하지는 않습니다."
+        no: 13, unitId: 3, type: "single_input",
+        title: "□ 안에 알맞은 자연수를 구하세요.",
+        expr: "□ × (6/31) = 30/31",
+        answers: ["5"],
+        displayAns: "5",
+        explanation: "□ = (30/31) ÷ (6/31) = 30 ÷ 6 = 5 입니다."
       },
       {
-        no: 4, unitId: 1, answer: "5",
-        question: "산성 용액과 염기성 용액의 성질 및 이용에 대한 설명으로 옳지 않은 것은?",
-        box: null,
+        no: 14, unitId: 3, type: "select",
+        title: "계산 결과가 자연수인 것을 찾아 고르세요.",
         options: [
-          "염기성 용액인 얼룩 제거제는 단백질을 녹이므로 땀이나 우유 얼룩을 지울 수 있다.",
-          "생선의 비린내는 염기성 물질이므로 산성 용액인 식초로 제거할 수 있다.",
-          "붉은 양배추 지시약은 산성 용액에서 붉은색 계열의 색깔로 변한다.",
-          "페놀프탈레인 용액을 넣은 묽은 수산화 나트륨 용액에 묽은 염산을 계속 넣으면 붉은색에서 무색으로 변한다.",
-          "묽은 수산화 나트륨 용액에 묽은 염산을 계속 넣으면 용액의 염기성이 점점 강해진다."
+          "㉠ 6 ÷ (4/11)",
+          "㉡ 14 ÷ (7/22)",
+          "㉢ 8 ÷ (5/8)"
         ],
-        explanation: "염기성 용액에 산성 용액을 넣으면 염기성이 점점 약해지다가 산성으로 변합니다."
+        answers: ["2", "㉡", "ㄴ"],
+        displayAns: "㉡ (2번)",
+        explanation: "㉠ = 33/2, ㉡ = 14 × (22/7) = 44(자연수), ㉢ = 64/5 입니다."
       },
       {
-        no: 5, unitId: 1, answer: "3",
-        question: "다음 피해 사례에 해당하는 산성화의 종류와 그 원인을 옳게 짝지은 것은?",
-        box: "이로운 작은 생물이 활동을 잘하지 못하게 되면 부정적인 영향을 주는 세균 등이 증가한다. 그 결과 식물은 병에 걸리기 쉽고 잘 시든다.",
-        options: [
-          "산성비 — 화산 활동으로 생긴 화산재",
-          "해양 산성화 — 바닷물의 증발량 증가",
-          "토양 산성화 — 과도한 화학 비료와 농약 사용, 대기 오염 물질 배출",
-          "토양 산성화 — 농경지에 물을 지나치게 많이 주는 것",
-          "해양 산성화 — 나무를 많이 심어 산소가 늘어난 것"
-        ],
-        explanation: "토양 산성화에 대한 설명이며, 과도한 비료, 농약 및 오염 물질 배출이 주원인입니다."
+        no: 15, unitId: 4, type: "single_input",
+        title: "만든 정다각형의 이름을 쓰세요.",
+        expr: "길이가 16/17 m인 철사를 모두 사용하여 한 변의 길이가 2/17 m인 정다각형을 만들었습니다.",
+        answers: ["정팔각형", "팔각형"],
+        displayAns: "정팔각형",
+        explanation: "변의 수 = (16/17) ÷ (2/17) = 16 ÷ 2 = 8개이므로 정팔각형입니다."
       },
       {
-        no: 6, unitId: 2, answer: "2",
-        question: "운동하는 물체의 공통된 특징으로 옳은 것은?",
-        box: "수영하는 사람, 움직이는 케이블카, 달리는 자동차, 달리는 기차",
-        options: [
-          "시간이 지나도 위치가 변하지 않는다.",
-          "시간이 지남에 따라 위치가 변한다.",
-          "시간이 지남에 따라 무게가 변한다.",
-          "시간이 지남에 따라 크기가 변한다.",
-          "항상 빠르기가 일정하다."
-        ],
-        explanation: "운동하는 물체는 시간이 지남에 따라 위치가 변합니다."
+        no: 16, unitId: 4, type: "single_input",
+        title: "□ 안에 들어갈 수 있는 가장 큰 자연수를 구하세요.",
+        expr: "□ < 9 ÷ (7/11)",
+        answers: ["14"],
+        displayAns: "14",
+        explanation: "9 ÷ (7/11) = 9 × (11/7) = 99/7 = 14와 1/7 입니다. 따라서 가장 큰 자연수는 14입니다."
       },
       {
-        no: 7, unitId: 2, answer: "3",
-        question: "물체의 운동을 나타낼 때 반드시 함께 나타내야 하는 것은?",
-        box: "(예) 자전거를 탄 사람은 5초 동안 동쪽으로 5 m를 이동했다.",
-        options: [
-          "물체의 무게와 크기",
-          "물체의 색깔과 모양",
-          "걸린 시간과 이동 거리",
-          "물체의 온도와 부피",
-          "물체의 이동 거리와 무게"
-        ],
-        explanation: "물체의 운동은 걸린 시간과 이동 거리(방향 포함)로 나타냅니다."
+        no: 17, unitId: 4, type: "fraction_only",
+        title: "조건을 만족하는 나눗셈식의 계산 결과(몫)를 구하세요.",
+        box: "• 7 ÷ 9를 이용하여 계산할 수 있습니다.<br>• 분모가 11보다 작은 진분수끼리의 나눗셈입니다.<br>• 두 분수의 분모는 같습니다.",
+        expr: "(7/10) ÷ (9/10) 의 계산 결과",
+        answers: ["7/9"],
+        displayAns: "7/9",
+        explanation: "(7/10) ÷ (9/10) = 7 ÷ 9 = 7/9 입니다."
       },
       {
-        no: 8, unitId: 2, answer: "2",
-        question: "10초 동안 장난감 자동차가 이동한 거리입니다. 가장 빠른 자동차와 그 까닭으로 옳은 것은?",
-        box: "㉠ 100 cm &nbsp;&nbsp;&nbsp; ㉡ 150 cm &nbsp;&nbsp;&nbsp; ㉢ 120 cm",
-        options: [
-          "㉠ — 같은 시간 동안 이동한 거리가 가장 짧기 때문이다.",
-          "㉡ — 같은 시간 동안 이동한 거리가 가장 길기 때문이다.",
-          "㉢ — 이동하는 데 걸린 시간이 가장 짧기 때문이다.",
-          "㉡ — 이동하는 데 걸린 시간이 가장 길기 때문이다.",
-          "세 자동차의 빠르기는 모두 같다."
-        ],
-        explanation: "걸린 시간이 같을 때는 이동한 거리가 가장 긴 물체(㉡)가 가장 빠릅니다."
+        no: 18, unitId: 4, type: "single_input",
+        title: "필요한 나무는 몇 그루인지 구하세요.",
+        expr: "길이가 3과 1/3 km인 산책로의 한쪽에 처음부터 끝까지 5/18 km 간격으로 나무를 심으려고 합니다.",
+        answers: ["13"],
+        displayAns: "13그루",
+        explanation: "간격 수 = (10/3) ÷ (5/18) = (10/3) × (18/5) = 12군데입니다. 처음부터 심으므로 12 + 1 = 13그루입니다."
       },
       {
-        no: 9, unitId: 2, answer: "2",
-        question: "2시간 동안 140 km를 이동한 배의 속력으로 옳은 것은?",
-        box: null,
-        options: ["35 km/h", "70 km/h", "140 km/h", "280 km/h", "2 km/h"],
-        explanation: "속력 = 이동 거리 ÷ 걸린 시간 = 140 km ÷ 2시간 = 70 km/h"
+        no: 19, unitId: 4, type: "single_input",
+        title: "물을 가득 채우려면 적어도 몇 번 부어야 하는지 구하세요.",
+        expr: "들이가 11 L인 통에 물이 2와 3/7 L 들어 있습니다. 들이가 6/7 L인 그릇으로 적어도 몇 번 부어야 합니까?",
+        answers: ["10"],
+        displayAns: "10번",
+        explanation: "채울 양 = 11 - 2와 3/7 = 8과 4/7 L. (60/7) ÷ (6/7) = 60 ÷ 6 = 10번입니다."
       },
       {
-        no: 10, unitId: 2, answer: "4",
-        question: "여러 동물의 이동 거리와 걸린 시간입니다. 빠른 것부터 순서대로 옳게 나열한 것은?",
-        box: "토끼 80 m / 5초 &nbsp;&nbsp;&nbsp;&nbsp; 호랑이 180 m / 6초<br>치타 320 m / 8초 &nbsp;&nbsp;&nbsp;&nbsp; 코끼리 200 m / 10초",
-        options: [
-          "치타 — 코끼리 — 호랑이 — 토끼",
-          "코끼리 — 치타 — 호랑이 — 토끼",
-          "치타 — 호랑이 — 토끼 — 코끼리",
-          "치타 — 호랑이 — 코끼리 — 토끼",
-          "토끼 — 코끼리 — 호랑이 — 치타"
-        ],
-        explanation: "초속으로 환산하면 치타(40m/s) > 호랑이(30m/s) > 코끼리(20m/s) > 토끼(16m/s) 순입니다."
-      },
-      {
-        no: 11, unitId: 3, answer: "5",
-        question: "양파 표피세포를 광학 현미경으로 관찰한 결과를 통해 알 수 있는 식물 세포의 특징으로 옳지 않은 것은?",
-        box: null,
-        options: [
-          "세포 안에 둥근 모양의 핵이 있다.",
-          "세포막의 바깥쪽에 세포벽이 있다.",
-          "세포 하나하나가 각진 모양이다.",
-          "각 세포들이 서로 붙어 있다.",
-          "세포벽이 없어 세포의 모양이 일정하지 않다."
-        ],
-        explanation: "식물 세포는 단단한 세포벽이 있어 규칙적이고 각진 모양을 유지합니다."
-      },
-      {
-        no: 12, unitId: 3, answer: "5",
-        question: "뿌리의 구조와 기능에 대한 설명으로 옳지 않은 것은?",
-        box: null,
-        options: [
-          "대부분 굵은 뿌리, 가는 뿌리, 뿌리털로 이루어져 있다.",
-          "땅속의 물을 흡수한다.",
-          "식물이 쓰러지지 않도록 지지한다.",
-          "무, 고구마처럼 뿌리에 양분을 저장하기도 한다.",
-          "뿌리에서 광합성을 하여 양분을 만든다."
-        ],
-        explanation: "광합성을 통해 스스로 양분을 만드는 곳은 뿌리가 아니라 주로 '잎'입니다."
-      },
-      {
-        no: 13, unitId: 3, answer: "1",
-        question: "붉은 색소 물에 넣어 둔 백합 줄기를 가로로 잘랐을 때의 단면 모습과 그 까닭으로 옳은 것은?",
-        box: null,
-        options: [
-          "붉은색 점이 여러 개 보인다 — 붉은 색소 물이 줄기를 통해 이동했기 때문이다.",
-          "단면 전체가 고르게 붉다 — 줄기가 물을 모두 저장했기 때문이다.",
-          "아무 변화가 없다 — 물은 잎으로만 이동하기 때문이다.",
-          "붉은색 점이 여러 개 보인다 — 줄기에서 광합성이 일어났기 때문이다.",
-          "가장자리만 붉다 — 줄기가 물을 밖으로 내보냈기 때문이다."
-        ],
-        explanation: "물이 이동하는 통로(물관)를 통해 붉은 색소 물이 올라가므로 붉은색 점들이 관찰됩니다."
-      },
-      {
-        no: 14, unitId: 3, answer: "4",
-        question: "광합성 실험 결과입니다. 이와 같은 결과가 나온 까닭으로 옳은 것은?",
-        box: "고추 모종의 잎 1개에만 알루미늄 포일을 씌우고 하루 동안 햇빛에 둔 뒤, 아이오딘-아이오딘화 칼륨 용액을 떨어뜨렸다.<br>• 알루미늄 포일을 씌운 잎: 용액의 색깔이 변하지 않는다.<br>• 알루미늄 포일을 씌우지 않은 잎: 용액의 색깔이 청람색으로 변한다.",
-        options: [
-          "알루미늄 포일을 씌운 잎에서만 광합성이 일어났기 때문이다.",
-          "아이오딘-아이오딘화 칼륨 용액이 단백질과 반응했기 때문이다.",
-          "빛을 받지 못한 잎에서 증산 작용이 활발했기 때문이다.",
-          "빛을 받은 잎에서만 광합성이 일어나 녹말이 만들어졌기 때문이다.",
-          "잎이 뿌리에서 올라온 물을 모두 흡수했기 때문이다."
-        ],
-        explanation: "빛을 받은 잎에서 광합성이 일어나 녹말이 생성되었고, 녹말이 아이오딘 용액과 만나 청람색으로 변했습니다."
-      },
-      {
-        no: 15, unitId: 3, answer: "3",
-        question: "고추 모종의 잎을 투명 지퍼 백에 넣고 입구를 닫아 햇빛이 잘 드는 곳에 1~2일 두었습니다. 지퍼 백 안의 변화와 그 까닭으로 옳은 것은?",
-        box: null,
-        options: [
-          "물방울이 맺히고 뿌옇게 변한다 — 광합성으로 잎에서 녹말이 만들어졌기 때문이다.",
-          "아무 변화가 없다 — 잎은 물을 밖으로 내보내지 않기 때문이다.",
-          "물방울이 맺히고 뿌옇게 변한다 — 증산 작용으로 잎에 도달한 물이 잎 밖으로 빠져나가기 때문이다.",
-          "지퍼 백 안이 건조해진다 — 뿌리가 물을 모두 흡수했기 때문이다.",
-          "지퍼 백 안이 붉게 변한다 — 색소 물이 잎까지 이동했기 때문이다."
-        ],
-        explanation: "잎의 기공을 통해 물이 수증기 상태로 빠져나가는 증산 작용 때문에 비닐에 물방울이 맺힙니다."
-      },
-      {
-        no: 16, unitId: 3, answer: "1",
-        question: "꽃의 각 부분과 그 기능을 옳게 짝지은 것은?",
-        box: null,
-        options: [
-          "암술 — 꽃가루받이가 이루어지고 씨가 만들어진다.",
-          "수술 — 꽃의 일부분을 보호한다.",
-          "꽃잎 — 꽃가루가 만들어진다.",
-          "꽃받침 — 씨가 만들어진다.",
-          "수술 — 꽃잎을 받쳐 보호한다."
-        ],
-        explanation: "암술은 꽃가루받이가 이루어져 씨가 되는 밑씨를 품고 있는 곳입니다."
-      },
-      {
-        no: 17, unitId: 4, answer: "2",
-        question: "하루 동안 태양과 별의 위치 변화에 대한 설명으로 옳은 것은?",
-        box: null,
-        options: [
-          "태양은 서쪽 하늘에서 동쪽 하늘로 위치가 달라진다.",
-          "태양은 동쪽 하늘에서 남쪽 하늘을 지나 서쪽 하늘로 위치가 달라진다.",
-          "별은 밤새 같은 위치에 머물러 있다.",
-          "태양과 별은 서로 반대 방향으로 움직인다.",
-          "별은 북쪽 하늘에서 남쪽 하늘로만 움직인다."
-        ],
-        explanation: "지구 자전(서→동)으로 인해 태양과 별은 모두 동쪽에서 남쪽을 거쳐 서쪽으로 이동하는 것처럼 보입니다."
-      },
-      {
-        no: 18, unitId: 4, answer: "4",
-        question: "지구본에 관측자 인형을 붙이고 전등을 비추며 지구본을 회전시켰습니다. 이 실험으로 알 수 있는 낮과 밤이 생기는 까닭으로 옳은 것은?",
-        box: null,
-        options: [
-          "지구가 공전하면서 태양과의 거리가 달라지기 때문이다.",
-          "태양이 지구 주위를 하루에 한 바퀴씩 돌기 때문이다.",
-          "달이 태양 빛을 가리기 때문이다.",
-          "지구가 자전하면서 태양 빛이 비치는 곳은 낮, 비치지 않는 곳은 밤이 되기 때문이다.",
-          "계절에 따라 지구의 위치가 달라지기 때문이다."
-        ],
-        explanation: "지구가 하루에 한 바퀴씩 자전하므로 빛을 받는 쪽은 낮, 반대쪽은 밤이 됩니다."
-      },
-      {
-        no: 19, unitId: 4, answer: "4",
-        question: "전등을 화면 가운데에 두고 학생이 회전하며 동영상을 촬영했습니다. 이 실험 결과를 지구의 운동과 관련지어 설명한 것으로 옳은 것은?",
-        box: "학생이 서쪽에서 동쪽으로 회전하면, 동영상 속 전등은 동쪽에서 서쪽으로 움직이는 것처럼 보인다.",
-        options: [
-          "지구가 동쪽에서 서쪽으로 자전하기 때문에 태양이 동쪽에서 서쪽으로 움직이는 것처럼 보인다.",
-          "태양이 실제로 서쪽에서 동쪽으로 움직이기 때문이다.",
-          "지구가 공전하기 때문에 태양의 위치가 달라진다.",
-          "지구가 서쪽에서 동쪽으로 자전하기 때문에 태양이 동쪽에서 서쪽으로 움직이는 것처럼 보인다.",
-          "지구가 회전하지 않아도 태양의 위치는 달라진다."
-        ],
-        explanation: "지구가 서쪽에서 동쪽으로 자전하기 때문에 겉보기 운동으로 태양이 동→서로 움직입니다."
-      },
-      {
-        no: 20, unitId: 4, answer: "3",
-        question: "지구의 공전에 대한 설명으로 옳은 것은?",
-        box: null,
-        options: [
-          "달을 중심으로 하루에 한 바퀴씩 도는 것이다.",
-          "태양을 중심으로 하루에 한 바퀴씩 도는 것이다.",
-          "태양을 중심으로 일 년에 한 바퀴씩 서쪽에서 동쪽으로 도는 것이다.",
-          "태양을 중심으로 일 년에 한 바퀴씩 동쪽에서 서쪽으로 도는 것이다.",
-          "지구가 제자리에서 일 년에 한 바퀴씩 도는 것이다."
-        ],
-        explanation: "지구의 공전은 태양을 중심으로 일 년에 한 바퀴씩 서쪽에서 동쪽으로 도는 운동입니다."
-      },
-      {
-        no: 21, unitId: 4, answer: "2",
-        question: "계절에 따라 대표적인 별자리와 별자리의 위치가 달라지는 까닭으로 옳은 것은?",
-        box: null,
-        options: [
-          "지구가 자전하면서 하루 동안 위치가 달라지기 때문이다.",
-          "지구가 태양 주위를 공전하면서 계절에 따라 지구의 위치가 달라지기 때문이다.",
-          "별자리가 실제로 하늘에서 이동하기 때문이다.",
-          "계절에 따라 별의 밝기가 달라지기 때문이다.",
-          "태양이 지구 주위를 일 년에 한 바퀴씩 돌기 때문이다."
-        ],
-        explanation: "지구가 태양 주위를 공전함에 따라 밤하늘에 보이는 방향의 별자리가 달라집니다."
-      },
-      {
-        no: 22, unitId: 5, answer: "4",
-        question: "페트병에 공기를 넣기 전과 넣은 뒤의 무게를 측정하는 실험 결과와 이를 통해 알 수 있는 기체의 성질로 옳은 것은?",
-        box: null,
-        options: [
-          "무게가 줄어든다 — 기체는 무게가 없다.",
-          "무게가 변하지 않는다 — 기체는 무게가 없다.",
-          "무게가 늘어난다 — 기체는 부피가 없다.",
-          "무게가 늘어난다 — 기체는 무게가 있다.",
-          "무게가 줄어든다 — 기체는 위로 올라가는 성질이 있다."
-        ],
-        explanation: "공기를 더 주입하면 페트병의 무게가 늘어나므로 기체도 무게가 있음을 알 수 있습니다."
-      },
-      {
-        no: 23, unitId: 5, answer: "1",
-        question: "삼각 플라스크 입구에 비누막을 만든 뒤 따뜻한 물과 얼음물에 각각 넣었을 때의 변화로 옳은 것은?",
-        box: null,
-        options: [
-          "따뜻한 물 — 부풀어 오름 / 얼음물 — 아래로 내려감",
-          "따뜻한 물 — 아래로 내려감 / 얼음물 — 부풀어 오름",
-          "두 경우 모두 부풀어 오른다.",
-          "두 경우 모두 아래로 내려간다.",
-          "두 경우 모두 변화가 없다."
-        ],
-        explanation: "기체는 온도가 높아지면 부피가 늘어나고, 온도가 낮아지면 부피가 줄어듭니다."
-      },
-      {
-        no: 24, unitId: 5, answer: "1",
-        question: "다음 ㉠, ㉡에서 기체의 부피가 달라진 까닭을 옳게 짝지은 것은?",
-        box: "㉠ 호핑볼에 앉으면 호핑볼이 찌그러진다.<br>㉡ 여름철 햇빛이 비치는 곳에 과자 봉지를 두면 과자 봉지가 부풀어 오른다.",
-        options: [
-          "㉠ 압력이 높아져 부피가 줄어듦 / ㉡ 온도가 높아져 부피가 늘어남",
-          "㉠ 온도가 높아져 부피가 늘어남 / ㉡ 압력이 높아져 부피가 줄어듦",
-          "㉠ 압력이 낮아져 부피가 늘어남 / ㉡ 온도가 낮아져 부피가 줄어듦",
-          "㉠ 온도가 낮아져 부피가 줄어듦 / ㉡ 압력이 낮아져 부피가 늘어남",
-          "㉠, ㉡ 모두 압력이 높아져 부피가 줄어듦"
-        ],
-        explanation: "㉠은 가해진 압력이 커져 부피 감소, ㉡은 열에 의해 온도가 올라가 부피가 증가한 현상입니다."
-      },
-      {
-        no: 25, unitId: 5, answer: "5",
-        question: "기체의 성질과 이용에 대한 설명으로 옳지 않은 것은?",
-        box: null,
-        options: [
-          "산소는 색깔과 냄새가 없고, 다른 물질이 탈 때 필요하다.",
-          "산소는 환자의 호흡 장치에 이용된다.",
-          "이산화 탄소는 색깔과 냄새가 없고, 다른 물질이 타는 것을 막는다.",
-          "이산화 탄소는 탄산음료를 만들거나 소화기에 이용된다.",
-          "이산화 탄소는 다른 물질이 잘 타게 도와주므로 응급 환자의 호흡 장치에 이용된다."
-        ],
-        explanation: "연소를 돕고 호흡에 필요한 기체는 산소이며, 이산화 탄소는 불을 끄는 소화기에 쓰입니다."
-      },
-      {
-        no: 26, unitId: 6, answer: "5",
-        question: "감염병의 뜻과 종류에 대한 설명으로 옳은 것은?",
-        box: null,
-        options: [
-          "영양이 부족하여 걸리는 질병으로, 충치·근시 등이 있다.",
-          "유전으로만 걸리는 질병으로, 다른 사람에게 옮지 않는다.",
-          "몸을 다쳐서 생기는 질병으로, 골절·화상 등이 있다.",
-          "날씨가 추워질 때만 걸리는 질병으로, 여름에는 걸리지 않는다.",
-          "세균이나 바이러스 등이 우리 몸에 들어와서 걸리는 질병으로, 독감·수두·볼거리 등이 있다."
-        ],
-        explanation: "감염병은 병원체(세균, 바이러스 등)가 인체에 침입하여 발생하고 전파될 수 있는 질환입니다."
-      },
-      {
-        no: 27, unitId: 6, answer: "5",
-        question: "컵 한 개로 물이나 음료를 여러 사람이 나누어 마시는 습관을 고쳐야 하는 까닭으로 가장 알맞은 것은?",
-        box: null,
-        options: [
-          "컵이 쉽게 깨질 수 있기 때문이다.",
-          "물의 온도가 낮아지기 때문이다.",
-          "컵을 씻는 데 물이 많이 들기 때문이다.",
-          "음료의 맛이 변하기 때문이다.",
-          "침을 통해 감염병이 옮을 수 있기 때문이다."
-        ],
-        explanation: "타액(침)을 통해 호흡기나 소화기 감염병 병원체가 전파될 수 있습니다."
-      },
-      {
-        no: 28, unitId: 6, answer: "3",
-        question: "감염병 예방을 위해 더 효과적인 손 씻기 방법과 그 까닭으로 옳은 것은?",
-        box: "㉠ 흐르는 물에 30초 동안 손 씻기<br>㉡ 비누칠을 하여 흐르는 물에 30초 동안 손 씻기",
-        options: [
-          "㉠ — 물만 사용해도 세균이 모두 씻겨 나가기 때문이다.",
-          "㉠ — 비누를 쓰면 손이 건조해지기 때문이다.",
-          "㉡ — 비누로 씻으면 손에 묻은 세균이나 바이러스를 더 잘 씻어 낼 수 있기 때문이다.",
-          "㉡ — 비누 거품이 세균을 직접 죽이기 때문이다.",
-          "㉠과 ㉡의 효과는 서로 같다."
-        ],
-        explanation: "비누의 계면활성 성분이 피부의 세균과 바이러스를 효과적으로 분리하여 씻어냅니다."
-      },
-      {
-        no: 29, unitId: 6, answer: "3",
-        question: "해수면 상승 피해 모형실험에 대한 설명입니다. ㉠~㉢ 중 잘못 설명한 것과 옳게 고친 내용으로 알맞은 것은?",
-        box: "플라스틱 용기 안에 물을 계속 부으면 ㉠ 용기 안 물의 양은 늘어나고 ㉡ 수면은 상승한다. 시간이 지날수록 ㉢ 바닷가 마을 모형의 모습에는 변화가 없다.",
-        options: [
-          "㉠ — 용기 안 물의 양은 줄어든다.",
-          "㉡ — 수면은 하강한다.",
-          "㉢ — 바닷가 마을 모형은 물에 잠기게 된다.",
-          "㉢ — 바닷가 마을 모형이 위로 떠오른다.",
-          "잘못 설명한 것이 없다."
-        ],
-        explanation: "수면이 상승하면 낮은 지대의 해안가 마을 모형은 침수 피해를 입게 됩니다."
-      },
-      {
-        no: 30, unitId: 6, answer: "1",
-        question: "오늘날 계절 길이의 변화와 그에 따른 생활 변화로 옳은 것은?",
-        box: null,
-        options: [
-          "겨울이 짧아지고 여름이 길어져, 가벼운 옷차림을 하는 날이 많아진다.",
-          "겨울이 길어지고 여름이 짧아져, 두꺼운 옷을 입는 날이 많아진다.",
-          "봄과 가을이 길어져, 농사 기간이 크게 늘어난다.",
-          "네 계절의 길이가 모두 같아져, 생활에 변화가 없다.",
-          "여름이 짧아져 무더위로 인한 질병이 줄어든다."
-        ],
-        explanation: "지구 온난화 등 기후변화로 인해 겨울은 짧아지고 여름의 시작이 빨라지며 길어지고 있습니다."
+        no: 20, unitId: 4, type: "fraction_only",
+        title: "직사각형 나의 넓이는 몇 cm²인지 구하세요.",
+        box: "• 직사각형 가: 넓이 8과 2/5 cm², 가로 3과 1/2 cm<br>• 직사각형 나: 가로 3/4 cm (세로는 가와 같음)",
+        expr: "직사각형 나의 넓이",
+        answers: ["1 4/5", "9/5"],
+        displayAns: "1과 4/5 (또는 9/5)",
+        explanation: "가의 세로 = (42/5) ÷ (7/2) = (42/5) × (2/7) = 12/5 cm. 나의 넓이 = (3/4) × (12/5) = 9/5 = 1과 4/5 cm²입니다."
       }
     ];
 
+    // 문제 화면 렌더링
     function renderQuizInputs() {
       const container = document.getElementById("questionsContainer");
       container.innerHTML = quizConfig.map(q => {
         const boxHtml = q.box ? `
-          <div class="my-3 p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs md:text-sm text-slate-700 leading-relaxed font-medium">
+          <div class="my-2.5 p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs md:text-sm text-slate-700 leading-relaxed font-medium">
             ${q.box}
           </div>` : '';
 
-        const optionsHtml = q.options.map((opt, idx) => {
-          const num = idx + 1;
-          return `
-            <label class="flex items-start gap-3 p-3 rounded-xl border border-slate-200 hover:bg-indigo-50/50 hover:border-indigo-300 transition cursor-pointer">
-              <input type="radio" name="q_${q.no}" value="${num}" class="mt-0.5 w-4 h-4 text-indigo-600 focus:ring-indigo-500 cursor-pointer" />
-              <span class="text-sm text-slate-700 leading-snug">
-                <strong class="text-slate-900 mr-1">${['①','②','③','④','⑤'][idx]}</strong> ${opt}
-              </span>
-            </label>
+        const exprHtml = q.expr ? `
+          <div class="text-sm md:text-base font-bold text-indigo-950 bg-indigo-50/40 border border-indigo-100 p-3 rounded-xl my-2">
+            ${q.expr}
+          </div>` : '';
+
+        let inputUi = '';
+
+        if (q.type === 'select') {
+          inputUi = `
+            <div class="space-y-2 mt-3">
+              ${q.options.map((opt, idx) => `
+                <label class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 hover:bg-indigo-50/50 hover:border-indigo-300 transition cursor-pointer">
+                  <input type="radio" name="q_${q.no}" value="${idx + 1}" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500" />
+                  <span class="text-sm font-semibold text-slate-800">${opt}</span>
+                </label>
+              `).join('')}
+            </div>
           `;
-        }).join('');
+        } else if (q.type === 'dual_input') {
+          inputUi = `
+            <div class="flex items-center gap-3 mt-3">
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-bold text-slate-500">${q.labels[0]}:</span>
+                <input type="text" id="ans_${q.no}_1" placeholder="수" class="w-16 border rounded-xl p-2 text-center text-sm font-bold outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-bold text-slate-500">${q.labels[1]}:</span>
+                <input type="text" id="ans_${q.no}_2" placeholder="수" class="w-16 border rounded-xl p-2 text-center text-sm font-bold outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+            </div>
+          `;
+        } else if (q.type === 'box_chain') {
+          inputUi = `
+            <div class="flex flex-wrap items-center gap-2 mt-3 text-xs md:text-sm">
+              <input type="text" id="ans_${q.no}_1" placeholder="㉠" class="w-12 border rounded-lg p-2 text-center font-bold" />
+              <span>÷</span>
+              <input type="text" id="ans_${q.no}_2" placeholder="㉡" class="w-12 border rounded-lg p-2 text-center font-bold" />
+              <span>=</span>
+              <div class="inline-flex flex-col items-center">
+                <input type="text" id="ans_${q.no}_3" placeholder="분자" class="w-14 border rounded-lg p-1 text-center font-bold" />
+                <div class="w-full border-b border-slate-400 my-0.5"></div>
+                <input type="text" id="ans_${q.no}_4" placeholder="분모" class="w-14 border rounded-lg p-1 text-center font-bold" />
+              </div>
+            </div>
+          `;
+        } else if (q.type === 'dual_fraction') {
+          inputUi = `
+            <div class="flex flex-wrap items-center gap-4 mt-3">
+              <div class="flex items-center gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                <span class="text-xs font-bold text-slate-600">${q.labels[0]}:</span>
+                <input type="text" id="ans_${q.no}_nat_1" placeholder="자연수" class="w-12 border rounded-lg p-1.5 text-center text-xs font-bold" />
+                <div class="flex flex-col items-center">
+                  <input type="text" id="ans_${q.no}_num_1" placeholder="분자" class="w-12 border rounded-lg p-1 text-center text-xs font-bold" />
+                  <div class="w-full border-b border-slate-400 my-0.5"></div>
+                  <input type="text" id="ans_${q.no}_den_1" placeholder="분모" class="w-12 border rounded-lg p-1 text-center text-xs font-bold" />
+                </div>
+              </div>
+              <div class="flex items-center gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                <span class="text-xs font-bold text-slate-600">${q.labels[1]}:</span>
+                <div class="flex flex-col items-center">
+                  <input type="text" id="ans_${q.no}_num_2" placeholder="분자" class="w-12 border rounded-lg p-1 text-center text-xs font-bold" />
+                  <div class="w-full border-b border-slate-400 my-0.5"></div>
+                  <input type="text" id="ans_${q.no}_den_2" placeholder="분모" class="w-12 border rounded-lg p-1 text-center text-xs font-bold" />
+                </div>
+              </div>
+            </div>
+          `;
+        } else if (q.type === 'fraction_only') {
+          inputUi = `
+            <div class="flex items-center gap-2 mt-3">
+              <input type="text" id="ans_${q.no}_nat" placeholder="자연수" class="w-14 border rounded-xl p-2 text-center text-sm font-bold outline-none focus:ring-2 focus:ring-indigo-500" title="대분수일 경우에만 입력" />
+              <div class="flex flex-col items-center">
+                <input type="text" id="ans_${q.no}_num" placeholder="분자" class="w-14 border rounded-lg p-1 text-center text-xs font-bold outline-none focus:ring-2 focus:ring-indigo-500" />
+                <div class="w-full border-b border-slate-400 my-0.5"></div>
+                <input type="text" id="ans_${q.no}_den" placeholder="분모" class="w-14 border rounded-lg p-1 text-center text-xs font-bold outline-none focus:ring-2 focus:ring-indigo-500" />
+              </div>
+            </div>
+          `;
+        } else {
+          inputUi = `
+            <div class="mt-3">
+              <input type="text" id="ans_${q.no}" placeholder="정답 입력" class="w-36 border rounded-xl p-2.5 text-center text-sm font-bold outline-none focus:ring-2 focus:ring-indigo-500" />
+            </div>
+          `;
+        }
 
         return `
           <article class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 md:p-6 transition hover:shadow-md" id="card_q_${q.no}">
@@ -702,16 +576,79 @@
                 ${q.no}
               </span>
               <div class="flex-grow">
-                <h3 class="text-base font-bold text-slate-900 leading-relaxed">${q.question}</h3>
+                <h3 class="text-base font-bold text-slate-900 leading-relaxed">${q.title}</h3>
                 ${boxHtml}
-                <div class="grid grid-cols-1 gap-2 mt-3">
-                  ${optionsHtml}
-                </div>
+                ${exprHtml}
+                ${inputUi}
               </div>
             </div>
           </article>
         `;
       }).join('');
+    }
+
+    function cleanStr(val) {
+      if (!val) return "";
+      return String(val).replace(/\s+/g, "").trim();
+    }
+
+    // 학생이 입력한 분수 조합 파싱
+    function getStudentVal(q) {
+      if (q.type === 'select') {
+        const checked = document.querySelector(`input[name="q_${q.no}"]:checked`);
+        return checked ? checked.value : "";
+      } else if (q.type === 'dual_input') {
+        const v1 = cleanStr(document.getElementById(`ans_${q.no}_1`).value);
+        const v2 = cleanStr(document.getElementById(`ans_${q.no}_2`).value);
+        return (v1 || v2) ? `${v1},${v2}` : "";
+      } else if (q.type === 'box_chain') {
+        const v1 = cleanStr(document.getElementById(`ans_${q.no}_1`).value);
+        const v2 = cleanStr(document.getElementById(`ans_${q.no}_2`).value);
+        const v3 = cleanStr(document.getElementById(`ans_${q.no}_3`).value);
+        const v4 = cleanStr(document.getElementById(`ans_${q.no}_4`).value);
+        return (v1 || v2 || v3 || v4) ? `${v1},${v2},${v3},${v4}` : "";
+      } else if (q.type === 'dual_fraction') {
+        const nat1 = cleanStr(document.getElementById(`ans_${q.no}_nat_1`).value);
+        const num1 = cleanStr(document.getElementById(`ans_${q.no}_num_1`).value);
+        const den1 = cleanStr(document.getElementById(`ans_${q.no}_den_1`).value);
+        const num2 = cleanStr(document.getElementById(`ans_${q.no}_num_2`).value);
+        const den2 = cleanStr(document.getElementById(`ans_${q.no}_den_2`).value);
+
+        const frac1 = num1 && den1 ? (nat1 ? `${nat1} ${num1}/${den1}` : `${num1}/${den1}`) : nat1;
+        const frac2 = num2 && den2 ? `${num2}/${den2}` : "";
+        return (frac1 || frac2) ? `${frac1} | ${frac2}` : "";
+      } else if (q.type === 'fraction_only') {
+        const nat = cleanStr(document.getElementById(`ans_${q.no}_nat`).value);
+        const num = cleanStr(document.getElementById(`ans_${q.no}_num`).value);
+        const den = cleanStr(document.getElementById(`ans_${q.no}_den`).value);
+        if (num && den) {
+          return nat ? `${nat} ${num}/${den}` : `${num}/${den}`;
+        }
+        return nat || "";
+      } else {
+        return cleanStr(document.getElementById(`ans_${q.no}`).value);
+      }
+    }
+
+    function checkAnswer(q, userVal) {
+      if (!userVal) return false;
+      const cleanU = cleanStr(userVal);
+
+      if (q.type === 'dual_input') {
+        const parts = userVal.split(',');
+        return parts.length === 2 && cleanStr(parts[0]) === q.answers[0][0] && cleanStr(parts[1]) === q.answers[1][0];
+      } else if (q.type === 'box_chain') {
+        const parts = userVal.split(',');
+        return parts.length === 4 && parts[0] === '7' && parts[1] === '9' && parts[2] === '7' && parts[3] === '9';
+      } else if (q.type === 'dual_fraction') {
+        const parts = userVal.split('|').map(s => cleanStr(s));
+        if (parts.length !== 2) return false;
+        const correct1 = q.answers[0].some(a => cleanStr(a) === parts[0]);
+        const correct2 = q.answers[1].some(a => cleanStr(a) === parts[1]);
+        return correct1 && correct2;
+      } else {
+        return q.answers.some(ans => cleanStr(ans) === cleanU);
+      }
     }
 
     async function syncToServer(data) {
@@ -739,20 +676,6 @@
         return;
       }
 
-      const unselected = [];
-      quizConfig.forEach(q => {
-        const checked = document.querySelector(`input[name="q_${q.no}"]:checked`);
-        if (!checked) unselected.push(q.no);
-      });
-
-      if (unselected.length > 0) {
-        if (!confirm(`아직 풀지 않은 문제가 ${unselected.length}개 있습니다 (${unselected.slice(0, 5).join(', ')}${unselected.length > 5 ? '...등' : ''}번).\n이대로 제출하시겠습니까?`)) {
-          const target = document.getElementById(`card_q_${unselected[0]}`);
-          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          return;
-        }
-      }
-
       const submitBtn = document.getElementById("btnSubmit");
       submitBtn.disabled = true;
       submitBtn.textContent = "채점 및 결과 전송 중...";
@@ -762,18 +685,19 @@
       let answersRecord = {};
 
       quizConfig.forEach(q => {
-        const checked = document.querySelector(`input[name="q_${q.no}"]:checked`);
-        const userVal = checked ? checked.value : "";
+        const userVal = getStudentVal(q);
         answersRecord[q.no] = userVal;
+        const isOk = checkAnswer(q, userVal);
 
-        if (userVal === q.answer) {
+        if (isOk) {
           correctCount++;
         } else {
           wrongQuestions.push(q.no);
         }
       });
 
-      const calculatedScore = Math.round((correctCount / 30) * 100);
+      // 20문항 기준 100점 만점 (문항당 5점)
+      const calculatedScore = correctCount * 5;
 
       const submission = {
         id: Date.now(),
@@ -804,11 +728,11 @@
 
       const wrongContainer = document.getElementById("wrongItemsContainer");
       if (wrongQuestions.length === 0) {
-        wrongContainer.innerHTML = `<div class="p-4 bg-emerald-50 text-emerald-800 rounded-xl font-bold text-center">🎉 30문제 모두 맞혔습니다! 완벽합니다!</div>`;
+        wrongContainer.innerHTML = `<div class="p-4 bg-emerald-50 text-emerald-800 rounded-xl font-bold text-center">🎉 20문제 모두 맞혔습니다! 100점 만점입니다!</div>`;
       } else {
         wrongContainer.innerHTML = `
           <div class="p-4 bg-rose-50 border border-rose-200 rounded-xl space-y-2">
-            <p class="text-rose-700 text-xs font-semibold">틀린 문항을 확인하고 다시 복습해 보세요.</p>
+            <p class="text-rose-700 text-xs font-semibold">틀린 문항을 확인하고 풀이를 다시 점검해 보세요.</p>
             <div class="flex flex-wrap gap-2 pt-1">
               ${wrongQuestions.map(no => `<span class="px-3 py-1 bg-white border border-rose-300 text-rose-600 font-bold rounded-lg text-xs shadow-sm">${no}번</span>`).join('')}
             </div>
@@ -844,9 +768,7 @@
         btnT.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-indigo-600 text-white transition shadow-sm";
         btnS.className = "px-4 py-2 rounded-xl text-sm font-semibold bg-slate-200 text-slate-700 hover:bg-slate-300 transition";
         
-        // 정원 입력란 초기값 반영
         document.getElementById("classRosterCount").value = totalClassRoster;
-
         fetchServerData(true);
         if (isAutoRefreshEnabled) startAutoRefresh();
       }
@@ -873,7 +795,7 @@
 
     async function regradeAllSubmissions() {
       if (globalSubmissions.length === 0) return alert("재채점할 데이터가 없습니다.");
-      if (!confirm("현재 설정된 정답을 기준으로 이미 제출된 모든 학생의 답안을 재채점하시겠습니까?\n구글 시트의 점수도 자동 갱신됩니다.")) return;
+      if (!confirm("현재 정답을 기준으로 이미 제출된 모든 학생의 답안을 재채점하시겠습니까?\n구글 시트의 점수도 자동 갱신됩니다.")) return;
 
       const btn = document.getElementById("btnRegrade");
       btn.disabled = true;
@@ -884,15 +806,15 @@
         let newWrongList = [];
 
         quizConfig.forEach(q => {
-          const userVal = (s.answers && s.answers[q.no]) ? String(s.answers[q.no]).trim() : "";
-          if (userVal === q.answer) {
+          const userVal = (s.answers && s.answers[q.no]) ? s.answers[q.no] : "";
+          if (checkAnswer(q, userVal)) {
             correctCount++;
           } else {
             newWrongList.push(q.no);
           }
         });
 
-        s.score = Math.round((correctCount / 30) * 100);
+        s.score = correctCount * 5;
         s.wrongList = newWrongList;
 
         await syncToServer(s);
@@ -938,7 +860,7 @@
     }
 
     async function deleteSubmission(subId, studentName) {
-      if (!confirm(`정말 '${studentName}' 학생의 제출 기록을 삭제하시겠습니까?\n구글 스프레드시트에서도 완전히 삭제됩니다.`)) return;
+      if (!confirm(`정말 '${studentName}' 학생의 제출 기록을 삭제하시겠습니까?\n구글 시트에서도 완전히 삭제됩니다.`)) return;
 
       globalSubmissions = globalSubmissions.filter(s => s.id !== subId);
       excludedStudentIds.delete(subId);
@@ -980,7 +902,6 @@
       });
     }
 
-    // 학급 정원 설정 변경
     function updateRosterCount() {
       const inputVal = parseInt(document.getElementById("classRosterCount").value, 10);
       if (isNaN(inputVal) || inputVal < 1) {
@@ -989,11 +910,10 @@
         return;
       }
       totalClassRoster = inputVal;
-      localStorage.setItem("science_class_roster", String(totalClassRoster));
+      localStorage.setItem("math621_class_roster", String(totalClassRoster));
       recalculateAndRender();
     }
 
-    // 미제출자 목록 계산
     function getUnsubmittedList() {
       const submittedNumbers = new Set(
         globalSubmissions.map(s => parseInt(s.studentNum, 10)).filter(n => !isNaN(n))
@@ -1008,7 +928,6 @@
       return unsubmitted;
     }
 
-    // 미제출자 모달 열기
     function openUnsubmittedModal() {
       const unsubmitted = getUnsubmittedList();
       document.getElementById("modalRosterDisplay").textContent = `${totalClassRoster}번`;
@@ -1127,7 +1046,7 @@
           </div>`;
       }).join('');
 
-      // 개별 문항 오답률 렌더링
+      // 개별 문항 오답률
       document.getElementById("questionStatsContainer").innerHTML = quizConfig.map(q => {
         const wrongRate = activeList.length > 0 ? Math.round((wrongCounts[q.no] / activeList.length) * 100) : 0;
         let badgeColor = "bg-slate-100 text-slate-600";
@@ -1135,7 +1054,7 @@
         else if (wrongRate >= 30) badgeColor = "bg-amber-100 text-amber-700 font-bold";
 
         return `
-          <button onclick="openQuestionWrongModal(${q.no})" class="border rounded-xl p-2 text-center flex flex-col items-center hover:border-indigo-400 hover:bg-indigo-50/30 transition cursor-pointer group" title="클릭 시 ${q.no}번 오답자 명단 확인">
+          <button onclick="openQuestionWrongModal(${q.no})" class="border rounded-xl p-2 text-center flex flex-col items-center hover:border-indigo-400 hover:bg-indigo-50/30 transition cursor-pointer group" title="클릭 시 ${q.no}번 오답자 확인">
             <span class="text-xs text-slate-500 group-hover:text-indigo-600 font-bold">${q.no}번</span>
             <span class="text-xs px-1.5 py-0.5 mt-1 rounded ${badgeColor}">${wrongRate}%</span>
           </button>`;
@@ -1194,13 +1113,14 @@
       const wrongStudents = activeList.filter(s => s.wrongList && s.wrongList.includes(qNo));
 
       document.getElementById("qModalTitle").textContent = `${q.no}번 문항 오답 학생 명단 (${wrongStudents.length}명)`;
-      document.getElementById("qModalSub").textContent = `정답: ${q.answer}번 / 전체 응시 인원 중 ${activeList.length > 0 ? Math.round((wrongStudents.length / activeList.length) * 100) : 0}% 오답률`;
+      document.getElementById("qModalSub").textContent = `정답: ${q.displayAns} / 오답률: ${activeList.length > 0 ? Math.round((wrongStudents.length / activeList.length) * 100) : 0}%`;
 
       const container = document.getElementById("qModalContent");
       container.innerHTML = `
         <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs">
-          <div class="font-bold text-slate-800 mb-1">${q.question}</div>
-          <div class="text-indigo-600 font-bold">정답: ${q.answer}번 (${q.options[Number(q.answer) - 1]})</div>
+          <div class="font-bold text-slate-800 mb-1">${q.title}</div>
+          ${q.expr ? `<div class="text-indigo-900 font-semibold my-1">${q.expr}</div>` : ''}
+          <div class="text-indigo-600 font-bold">정답: ${q.displayAns}</div>
         </div>
       `;
 
@@ -1214,9 +1134,7 @@
         wrongStudents.sort((a, b) => Number(a.studentNum) - Number(b.studentNum));
 
         const listHtml = wrongStudents.map(s => {
-          const userChoice = (s.answers && s.answers[qNo]) ? s.answers[qNo] : "미선택";
-          const optionText = (userChoice && userChoice !== "미선택") ? q.options[Number(userChoice) - 1] : "답안 미입력";
-
+          const userVal = (s.answers && s.answers[qNo]) ? s.answers[qNo] : "(미입력)";
           return `
             <div class="flex items-center justify-between p-3 bg-rose-50/60 border border-rose-100 rounded-xl text-xs">
               <div class="flex items-center gap-2">
@@ -1225,8 +1143,7 @@
                 <span class="text-[11px] text-slate-400">(${s.gender})</span>
               </div>
               <div class="text-right">
-                <span class="text-rose-600 font-bold">선택: ${userChoice}번</span>
-                <span class="text-slate-400 text-[11px] ml-1">(${optionText})</span>
+                <span class="text-rose-600 font-bold">제출: ${userVal}</span>
               </div>
             </div>
           `;
@@ -1234,7 +1151,7 @@
 
         container.innerHTML += `
           <div class="space-y-2 pt-1">
-            <div class="text-xs font-bold text-slate-500">틀린 학생 (${wrongStudents.length}명)</div>
+            <div class="text-xs font-bold text-slate-500">틀린 학생 명단 (${wrongStudents.length}명)</div>
             ${listHtml}
           </div>
         `;
@@ -1251,35 +1168,34 @@
       const student = globalSubmissions.find(s => s.id === subId);
       if (!student) return;
 
-      document.getElementById("modalStudentTitle").textContent = `${student.name} 학생 (${student.studentNum}번) 오답 심층 분석`;
+      document.getElementById("modalStudentTitle").textContent = `${student.name} 학생 (${student.studentNum}번) 답안 상세 분석`;
       document.getElementById("modalStudentSub").textContent = `총점: ${student.score}점 / 틀린 문항: ${student.wrongList.length}문항`;
 
       const modalContent = document.getElementById("modalContent");
 
       if (student.wrongList.length === 0) {
-        modalContent.innerHTML = `<div class="p-6 text-center text-emerald-600 font-bold bg-emerald-50 rounded-xl">🎉 모든 문항을 맞혔습니다! 만점입니다.</div>`;
+        modalContent.innerHTML = `<div class="p-6 text-center text-emerald-600 font-bold bg-emerald-50 rounded-xl">🎉 모든 문항을 맞혔습니다! 100점 만점입니다.</div>`;
       } else {
         modalContent.innerHTML = student.wrongList.map(qNo => {
           const q = quizConfig.find(item => item.no === qNo);
-          const userVal = student.answers ? student.answers[qNo] : "미선택";
-          const userLabel = userVal ? `${userVal}번` : "미선택";
-          const correctLabel = `${q.answer}번`;
+          const userVal = student.answers ? student.answers[qNo] : "(미입력)";
 
           return `
             <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 space-y-2.5 text-xs">
               <div class="flex justify-between items-center border-b pb-2">
                 <span class="font-bold text-rose-600 text-sm">${q.no}번 문항</span>
-                <span class="px-2 py-0.5 rounded font-semibold bg-rose-100 text-rose-700">개념 오답</span>
+                <span class="px-2 py-0.5 rounded font-semibold bg-rose-100 text-rose-700">오답</span>
               </div>
-              <p class="font-bold text-slate-800 text-sm">${q.question}</p>
+              <p class="font-bold text-slate-800 text-sm">${q.title}</p>
+              ${q.expr ? `<div class="text-indigo-950 font-semibold bg-white p-2 rounded border">${q.expr}</div>` : ''}
               <div class="grid grid-cols-2 gap-2 pt-1">
                 <div class="bg-white p-2.5 rounded-lg border border-slate-200">
-                  <div class="text-slate-400 font-medium mb-0.5">학생 선택</div>
-                  <div class="font-extrabold text-rose-600 text-sm">${userLabel}</div>
+                  <div class="text-slate-400 font-medium mb-0.5">학생 제출</div>
+                  <div class="font-extrabold text-rose-600 text-sm">${userVal || "(미입력)"}</div>
                 </div>
                 <div class="bg-white p-2.5 rounded-lg border border-indigo-100">
                   <div class="text-indigo-500 font-medium mb-0.5">실제 정답</div>
-                  <div class="font-extrabold text-indigo-600 text-sm">${correctLabel}</div>
+                  <div class="font-extrabold text-indigo-600 text-sm">${q.displayAns}</div>
                 </div>
               </div>
               <div class="bg-white p-3 rounded-lg border border-slate-200 text-slate-600 leading-relaxed">
@@ -1306,7 +1222,7 @@
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = `과학평가_집계_${new Date().toISOString().slice(0, 10)}.csv`;
+      a.download = `수학6-2_1단원_평가집계_${new Date().toISOString().slice(0, 10)}.csv`;
       a.click();
     }
 
