@@ -109,7 +109,7 @@
             <div class="flex items-center justify-between mt-1">
               <span class="text-xs font-semibold text-rose-500" id="statUnsubmittedText">미제출 0명</span>
               <button onclick="openUnsubmittedModal()" class="text-[11px] bg-rose-50 text-rose-600 hover:bg-rose-100 font-bold px-2 py-0.5 rounded transition">
-                명단 보기
+                미제출 명단
               </button>
             </div>
           </div>
@@ -245,25 +245,48 @@
     </div>
   </div>
 
-  <!-- [모달 3] 미제출자 명단 팝업 모달 -->
+  <!-- [모달 3] 미제출자 명단 팝업 모달 (이름 표시 + 명렬표 관리) -->
   <div id="unsubmittedModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[80vh] flex flex-col overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[85vh] flex flex-col overflow-hidden">
       <div class="p-5 border-b flex justify-between items-center bg-rose-50">
         <div>
-          <h3 class="text-lg font-bold text-rose-950">📋 아직 제출하지 않은 학생</h3>
-          <p class="text-xs text-rose-600 mt-0.5">학급 정원 대비 미응시자 번호 목록</p>
+          <h3 class="text-lg font-bold text-rose-950">📋 미제출 학생 명단</h3>
+          <p class="text-xs text-rose-600 mt-0.5" id="unsubmittedModalSub">학급 명렬표 기반 미응시자 확인</p>
         </div>
         <button onclick="closeUnsubmittedModal()" class="text-slate-400 hover:text-slate-700 text-2xl font-bold p-1">&times;</button>
       </div>
+      
       <div class="p-5 overflow-y-auto space-y-4">
-        <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-600 leading-relaxed">
-          학급 정원(1번부터 <span id="modalRosterDisplay" class="font-bold text-slate-900">25번</span>) 중 제출하지 않은 번호입니다.
+        <!-- 상단 요약 바 및 명렬표 등록 버튼 -->
+        <div class="flex items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200">
+          <span class="text-xs text-slate-600">학급 정원: <strong class="text-slate-900" id="modalRosterDisplay">25명</strong></span>
+          <button onclick="toggleRosterEdit()" class="text-xs px-2.5 py-1 bg-indigo-50 text-indigo-600 border border-indigo-200 hover:bg-indigo-100 rounded-lg font-bold transition">
+            ✏️ 학급 명렬표 설정
+          </button>
         </div>
+
+        <!-- 명렬표 빠른 입력 영역 (토글) -->
+        <div id="rosterEditArea" class="hidden bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-bold text-slate-700">명렬표 직접 등록 (번호 순으로 이름 입력)</span>
+            <span class="text-[10px] text-slate-400">줄바꿈 또는 쉼표 구분</span>
+          </div>
+          <textarea id="rosterInputText" rows="4" placeholder="예시:&#10;김철수&#10;이영희&#10;박민수&#10;... (1번부터 순서대로)" class="w-full text-xs p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"></textarea>
+          <div class="flex justify-end gap-1.5">
+            <button onclick="toggleRosterEdit()" class="px-2.5 py-1 bg-slate-200 text-slate-600 rounded text-xs">취소</button>
+            <button onclick="saveRosterNames()" class="px-2.5 py-1 bg-indigo-600 text-white rounded text-xs font-bold hover:bg-indigo-700">저장</button>
+          </div>
+        </div>
+
+        <!-- 미제출자 명단 리스트 -->
         <div>
-          <div class="text-xs font-bold text-slate-500 mb-2">미제출 번호 (<span id="unsubmittedCountDisplay" class="text-rose-600">0</span>명)</div>
-          <div id="unsubmittedListContainer" class="flex flex-wrap gap-2"></div>
+          <div class="text-xs font-bold text-slate-600 mb-2">
+            미제출 학생 (<span id="unsubmittedCountDisplay" class="text-rose-600 font-extrabold">0</span>명)
+          </div>
+          <div id="unsubmittedListContainer" class="space-y-1.5 max-h-64 overflow-y-auto pr-1"></div>
         </div>
       </div>
+
       <div class="p-4 border-t bg-slate-50 flex justify-end">
         <button onclick="closeUnsubmittedModal()" class="px-5 py-2 bg-slate-800 text-white rounded-xl text-sm font-semibold hover:bg-slate-900">닫기</button>
       </div>
@@ -282,8 +305,11 @@
     let currentSortColumn = 'studentNum';
     let currentSortOrder = 'asc';
     let totalClassRoster = parseInt(localStorage.getItem("math621_final_roster") || "25", 10);
+    
+    // 명렬표 이름 목록 { 1: "김철수", 2: "이영희" ... }
+    let rosterNames = JSON.parse(localStorage.getItem("math621_roster_names") || "{}");
 
-    // 단원 세부 4대 평가 영역 매핑 (이원목적분류표 기준)
+    // 단원 세부 4대 평가 영역 매핑 (이원목적분류표 기준)[cite: 5]
     const unitDefinitions = [
       { id: 1, name: "1. (자연수)÷(분수) 기본 연산", questions: [1, 5, 10, 12, 18] },
       { id: 2, name: "2. 분모가 같은 (분수)÷(분수)", questions: [4, 6, 8, 13] },
@@ -291,7 +317,7 @@
       { id: 4, name: "4. 대분수 나눗셈 및 도형·실생활 응용", questions: [7, 14, 16, 17, 19, 20] }
     ];
 
-    // 새 시험지 정답 및 문제 데이터베이스
+    // 새 시험지 정답 및 문제 데이터베이스[cite: 5, 6]
     const quizConfig = [
       {
         no: 1, unitId: 1, type: "single_input",
@@ -374,7 +400,7 @@
         answers: ["1 5/16", "21/16"],
         displayAns: "1과 5/16배 (또는 21/16배)",
         unitLabel: "배",
-        explanation: "사과의 무게의 몇 배인지 구하는 식이므로 배 ÷ 사과 = (2/7) ÷ (3/8)... 실제 문제 공식 대조: (2/7) ÷ (3/8) = (2/7)×(8/3) ... 정답표 기준 1과 5/16배 (배가 1/2kg 또는 사과 3/8 대비 원문 정답: 1과 5/16)."
+        explanation: "원문 정답표 기준 1과 5/16배 입니다."
       },
       {
         no: 10, unitId: 1, type: "single_input",
@@ -784,6 +810,16 @@
         const res = await fetch(fetchUrl, { method: "GET", redirect: "follow" });
         const data = await res.json();
         globalSubmissions = data;
+
+        // 제출된 학생들 이름으로 명렬표 자동 보강
+        globalSubmissions.forEach(s => {
+          const num = parseInt(s.studentNum, 10);
+          if (num && s.name && !rosterNames[num]) {
+            rosterNames[num] = s.name;
+          }
+        });
+        localStorage.setItem("math621_roster_names", JSON.stringify(rosterNames));
+
         recalculateAndRender();
       } catch (err) {
         if (showLoading) {
@@ -859,7 +895,7 @@
     }
 
     async function deleteSubmission(subId, studentName) {
-      if (!confirm(`정말 '${studentName}' 학생의 제출 기록을 삭제하시겠습니까?\n구글 스프레드시트에서도 완전히 삭제됩니다.`)) return;
+      if (!confirm(`정말 '${studentName}' 학생의 제출 기록을 삭제하시겠습니까?\n구글 시트에서도 완전히 삭제됩니다.`)) return;
 
       globalSubmissions = globalSubmissions.filter(s => s.id !== subId);
       excludedStudentIds.delete(subId);
@@ -913,6 +949,7 @@
       recalculateAndRender();
     }
 
+    // 미제출자 목록 계산 (번호 및 이름 객체 반환)
     function getUnsubmittedList() {
       const submittedNumbers = new Set(
         globalSubmissions.map(s => parseInt(s.studentNum, 10)).filter(n => !isNaN(n))
@@ -921,15 +958,49 @@
       const unsubmitted = [];
       for (let i = 1; i <= totalClassRoster; i++) {
         if (!submittedNumbers.has(i)) {
-          unsubmitted.push(i);
+          unsubmitted.push({
+            num: i,
+            name: rosterNames[i] || ""
+          });
         }
       }
       return unsubmitted;
     }
 
+    // 명렬표 등록창 토글
+    function toggleRosterEdit() {
+      const editArea = document.getElementById("rosterEditArea");
+      editArea.classList.toggle("hidden");
+      if (!editArea.classList.contains("hidden")) {
+        // 기존 등록된 이름 텍스트 채우기
+        const lines = [];
+        for (let i = 1; i <= totalClassRoster; i++) {
+          lines.push(rosterNames[i] || "");
+        }
+        document.getElementById("rosterInputText").value = lines.join('\n').trim();
+      }
+    }
+
+    // 명렬표 이름 저장
+    function saveRosterNames() {
+      const text = document.getElementById("rosterInputText").value;
+      const items = text.split(/[\n,]/).map(s => s.trim()).filter(s => s !== "");
+      
+      rosterNames = {};
+      items.forEach((nm, idx) => {
+        const num = idx + 1;
+        if (num <= 50) rosterNames[num] = nm;
+      });
+
+      localStorage.setItem("math621_roster_names", JSON.stringify(rosterNames));
+      toggleRosterEdit();
+      openUnsubmittedModal(); // 모달 명단 갱신
+    }
+
+    // 미제출자 모달 열기 (이름으로 표시)
     function openUnsubmittedModal() {
       const unsubmitted = getUnsubmittedList();
-      document.getElementById("modalRosterDisplay").textContent = `${totalClassRoster}번`;
+      document.getElementById("modalRosterDisplay").textContent = `${totalClassRoster}명`;
       document.getElementById("unsubmittedCountDisplay").textContent = unsubmitted.length;
 
       const container = document.getElementById("unsubmittedListContainer");
@@ -939,10 +1010,20 @@
             🎉 학급 정원 ${totalClassRoster}명 전원이 답안을 제출했습니다!
           </div>`;
       } else {
-        container.innerHTML = unsubmitted.map(num => `
-          <span class="px-3 py-1.5 bg-rose-50 border border-rose-200 text-rose-700 font-extrabold rounded-xl text-xs shadow-sm">
-            ${num}번
-          </span>
+        container.innerHTML = unsubmitted.map(st => `
+          <div class="flex items-center justify-between p-2.5 bg-rose-50/70 border border-rose-100 rounded-xl text-xs">
+            <div class="flex items-center gap-2">
+              <span class="w-7 h-7 bg-white border border-rose-200 text-rose-700 font-extrabold rounded-lg flex items-center justify-center text-[11px] shadow-sm">
+                ${st.num}
+              </span>
+              <span class="font-extrabold text-slate-800 text-sm">
+                ${st.name ? st.name : `<span class="text-slate-400 font-normal text-xs">(이름 미등록)</span>`}
+              </span>
+            </div>
+            <span class="text-[11px] text-rose-500 font-bold bg-white px-2 py-0.5 rounded-full border border-rose-200">
+              미제출
+            </span>
+          </div>
         `).join('');
       }
 
